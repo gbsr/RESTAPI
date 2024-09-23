@@ -1,9 +1,3 @@
-// config
-import express, { Express, NextFunction, Request, Response } from "express";
-import { router } from "./products.js";
-const app: Express = express();
-const port = 1338;
-
 // https://restfulapi.net/http-status-codes/
 /**
  * Common HTTP Status Codes for REST API Design
@@ -31,6 +25,11 @@ const port = 1338;
  * 503 Service Unavailable - The server is currently unable to handle the request
  */
 
+import express, { Express, NextFunction, Request, Response } from "express";
+import { router } from "./handleProducts.js";
+const app: Express = express();
+const port = 1338;
+
 // Middleware
 app.use(express.json()); // put stuff in body
 
@@ -41,6 +40,8 @@ app.use("/", (req: Request, res: Response, next: NextFunction) => {
 
 // Endpoints - imported from separate files
 app.use("/products", router);
+app.use("/cart", router);
+app.use("/users", router);
 
 // start server
 app.listen(port, () => {

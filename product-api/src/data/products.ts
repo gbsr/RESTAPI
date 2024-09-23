@@ -1,9 +1,18 @@
-// Existing Product interface
+import productsData from "../data/mockdata.json";
+
+// Convert the imported data to the Product type
+export const products: Product[] = productsData as Product[];
+
 export interface Product {
 	id: number;
 	name: string;
 	price: number;
 	category: string;
+	description: string;
+	inStock: boolean;
+	rating: number;
+	createdAt: string;
+	imgUrl: string;
 }
 
 // New interface for products without ID
@@ -11,15 +20,12 @@ export interface NewProduct {
 	name: string;
 	price: number;
 	category: string;
+	description: string;
+	inStock: boolean;
+	rating: number;
+	createdAt: string;
+	imgUrl: string;
 }
-
-// replace this with actual data from database
-export const products: Product[] = [
-	{ id: 1, name: "Hammare", price: 199, category: "Slagverktyg" },
-	{ id: 2, name: "Skruvmejsel", price: 79, category: "Handverktyg" },
-	{ id: 3, name: "Tång", price: 129, category: "Handverktyg" },
-	{ id: 4, name: "Såg", price: 249, category: "Skärverktyg" },
-];
 
 /**
  * The function generates a new unique ID for a product by finding the maximum existing ID and
