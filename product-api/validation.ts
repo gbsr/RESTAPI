@@ -1,4 +1,4 @@
-import { NewProduct } from "./src/data/tools.js";
+import { NewProduct } from "./src/data/products.js";
 import joi from "joi";
 
 export const productSchema = joi.object({
