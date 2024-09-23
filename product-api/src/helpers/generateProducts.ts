@@ -26,8 +26,10 @@ function writeProductsToFile(outputPath: string) {
 				console.error("Error writing file:", err);
 			} else {
 				logWithLocation(
-					`Mock data written to file: ${absoluteOutputPath}`
+					`Mock data written to file: ${absoluteOutputPath}`,
+					"success"
 				);
+				console.log("");
 			}
 		}
 	);

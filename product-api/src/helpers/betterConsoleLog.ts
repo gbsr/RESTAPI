@@ -12,7 +12,7 @@ const BOLD = "\x1b[1m";
 interface LogLevel {
 	name: string;
 	color: string;
-	logFunction: (message?: any, ...optionalParams: any[]) => void;
+	logFunction: (message?: string, ...optionalParams: string[]) => void;
 }
 
 const defaultLogLevels: { [key: string]: LogLevel } = {
@@ -20,6 +20,7 @@ const defaultLogLevels: { [key: string]: LogLevel } = {
 	warn: { name: "WARN", color: COLOR_ORANGE, logFunction: console.warn },
 	error: { name: "ERROR", color: COLOR_RED, logFunction: console.error },
 	debug: { name: "DEBUG", color: COLOR_BLUE, logFunction: console.debug },
+	success: { name: "SUCCESS", color: COLOR_GREEN, logFunction: console.log },
 };
 
 let customLogLevels: { [key: string]: LogLevel } = {};
@@ -37,7 +38,10 @@ function formatDate(date: Date): string {
 export function addCustomLogLevel(
 	name: string,
 	color: string,
-	logFunction: (message?: any, ...optionalParams: any[]) => void = console.log
+	logFunction: (
+		message?: string,
+		...optionalParams: any[]
+	) => void = console.log
 ): void {
 	customLogLevels[name.toLowerCase()] = {
 		name: name.toUpperCase(),
@@ -46,7 +50,7 @@ export function addCustomLogLevel(
 	};
 }
 
-export function logWithLocation(message: any, level: string = "info"): void {
+export function logWithLocation(message: string, level: string): void {
 	const logLevel =
 		customLogLevels[level.toLowerCase()] ||
 		defaultLogLevels[level.toLowerCase()] ||
@@ -54,20 +58,22 @@ export function logWithLocation(message: any, level: string = "info"): void {
 
 	const stack = new Error().stack;
 	const caller = stack?.split("\n")[2]?.trim();
-	const match = caller?.match(/\((.*?):(\d+):(\d+)\)$/);
+
+	const match = caller?.match(/at.*?\s+\(?(.+):(\d+):(\d+)\)?$/);
+
+	let fileName = "unknown";
+	let line = "?";
 
 	if (match) {
-		const [, filePath, line, column] = match;
-		const fileName = filePath.split("/").pop() || filePath;
-		const timestamp = formatDate(new Date());
-		logLevel.logFunction(
-			`${COLOR_GREEN}--- ${fileName}${COLOR_RESET}:${COLOR_ORANGE}${line},${COLOR_RESET} ${logLevel.color}${BOLD} *[${logLevel.name}]${COLOR_RESET} ${COLOR_BLUE}:${timestamp}:${COLOR_RESET}\n    ${message}\n${COLOR_GREEN}--- \n`
-		);
-	} else {
-		logLevel.logFunction(
-			`${logLevel.color}[${logLevel.name}]${COLOR_RESET} ${message}`
-		);
+		[, fileName, line] = match;
+		fileName = fileName.split("/").pop() || fileName;
 	}
+
+	const timestamp = formatDate(new Date());
+
+	logLevel.logFunction(
+		`${COLOR_GREEN}--- ${fileName}${COLOR_RESET}:${COLOR_ORANGE}${line},${COLOR_RESET} ${logLevel.color}${BOLD} *[${logLevel.name}]${COLOR_RESET} ${COLOR_BLUE}:${timestamp}:${COLOR_RESET}\n ${message}\n${COLOR_GREEN}--- \n`
+	);
 }
 
 // Usage examples

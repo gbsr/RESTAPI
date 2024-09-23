@@ -13,6 +13,7 @@ const defaultLogLevels = {
     warn: { name: "WARN", color: COLOR_ORANGE, logFunction: console.warn },
     error: { name: "ERROR", color: COLOR_RED, logFunction: console.error },
     debug: { name: "DEBUG", color: COLOR_BLUE, logFunction: console.debug },
+    success: { name: "SUCCESS", color: COLOR_GREEN, logFunction: console.log },
 };
 let customLogLevels = {};
 function formatDate(date) {
@@ -26,22 +27,21 @@ export function addCustomLogLevel(name, color, logFunction = console.log) {
         logFunction,
     };
 }
-export function logWithLocation(message, level = "info") {
+export function logWithLocation(message, level) {
     const logLevel = customLogLevels[level.toLowerCase()] ||
         defaultLogLevels[level.toLowerCase()] ||
         defaultLogLevels.info;
     const stack = new Error().stack;
     const caller = stack?.split("\n")[2]?.trim();
-    const match = caller?.match(/\((.*?):(\d+):(\d+)\)$/);
+    const match = caller?.match(/at.*?\s+\(?(.+):(\d+):(\d+)\)?$/);
+    let fileName = "unknown";
+    let line = "?";
     if (match) {
-        const [, filePath, line, column] = match;
-        const fileName = filePath.split("/").pop() || filePath;
-        const timestamp = formatDate(new Date());
-        logLevel.logFunction(`${COLOR_GREEN}--- ${fileName}${COLOR_RESET}:${COLOR_ORANGE}${line},${COLOR_RESET} ${logLevel.color}${BOLD} *[${logLevel.name}]${COLOR_RESET} ${COLOR_BLUE}:${timestamp}:${COLOR_RESET}\n    ${message}\n${COLOR_GREEN}--- \n`);
+        [, fileName, line] = match;
+        fileName = fileName.split("/").pop() || fileName;
     }
-    else {
-        logLevel.logFunction(`${logLevel.color}[${logLevel.name}]${COLOR_RESET} ${message}`);
-    }
+    const timestamp = formatDate(new Date());
+    logLevel.logFunction(`${COLOR_GREEN}--- ${fileName}${COLOR_RESET}:${COLOR_ORANGE}${line},${COLOR_RESET} ${logLevel.color}${BOLD} *[${logLevel.name}]${COLOR_RESET} ${COLOR_BLUE}:${timestamp}:${COLOR_RESET}\n ${message}\n${COLOR_GREEN}--- \n`);
 }
 // Usage examples
 // logWithLocation("This is an info message");
