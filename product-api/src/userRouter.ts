@@ -1,58 +1,32 @@
-import "dotenv/config";
-
-import { MongoClient, Db, Collection } from "mongodb";
 import { Router, Request, Response } from "express";
+import { Collection } from "mongodb";
 import { User } from "./data/users.js";
 import { logWithLocation } from "./helpers/betterConsoleLog.js";
-
+import { db } from "../src/data/dbConnection.js";
 const userRouter = Router();
-
-const connectionString = process.env.CONNECTION_STRING;
-const dbName = process.env.MONGODB_DB_NAME;
-
-if (!connectionString) {
-	console.error("CONNECTION_STRING is not defined in environment variables");
-	process.exit(1);
-}
-
-if (!dbName) {
-	console.error("MONGODB_DB_NAME is not defined in environment variables");
-	process.exit(1);
-}
-
-const client: MongoClient = new MongoClient(connectionString);
-let db: Db;
 let collection: Collection<User>;
 
-async function connect() {
-	try {
-		await client.connect();
-		db = client.db(dbName);
-		collection = db.collection<User>("users");
-		logWithLocation(`Connected to the database successfully.`, "success");
-		logWithLocation(
-			`Number of products: ${await collection.countDocuments()}`,
-			"success"
-		);
-	} catch (error: any) {
-		logWithLocation(`Failed to connect to the database. ${error}`, "error");
-		throw error; // Re-throw to handle in server.ts
-	}
-}
+// Initialize collection
+userRouter.use((req, res, next) => {
+	collection = db.collection<User>("users");
+	next();
+});
 
 // List all users
+/* This part of the code defines a route handler for a GET request to the root path ("/") of the
+userRouter. When a GET request is made to this path, the handler function is executed
+asynchronously. */
 userRouter.get("/", async (req: Request, res: Response) => {
 	try {
-		const users = await collection.countDocuments()
+		const users = await collection.find().toArray();
 		res.status(200).json(users);
 	} catch (error: any) {
-		logWithLocation(`Error fetching products: ${error.message}`, "error");
+		logWithLocation(`Error fetching users: ${error.message}`, "error");
 		res.status(500).json({
-			message: "Error fetching products",
+			message: "Error fetching users",
 			error: error.message,
 		});
 	}
-	await client.close();
 });
 
-export { userRouter, connect, client };
+export { userRouter };

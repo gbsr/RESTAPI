@@ -1,9 +1,10 @@
 import "dotenv/config";
 import express from "express";
-import { productRouter, connect, client } from "./productRouter.js";
-import { logWithLocation } from "./helpers/betterConsoleLog.js";
+import { productRouter } from "./productRouter.js";
 import { userRouter } from "./userRouter.js";
 import { cartRouter } from "./cartRouter.js";
+import { logWithLocation } from "./helpers/betterConsoleLog.js";
+import { connect, client } from "./data/dbConnection.js";
 const app = express();
 const port = process.env.PORT;
 // Middleware
@@ -14,14 +15,18 @@ app.get("/", (req, res) => {
     logWithLocation(`Server status: ${res.statusCode}`, "success");
 });
 app.use("/products", productRouter);
-app.use('/users', userRouter);
-app.use('/cart', cartRouter);
+app.use("/users", userRouter);
+app.use("/cart", cartRouter);
+/**
+ * The `startServer` function attempts to connect to a server, starts listening on a specified port,
+ * and logs the success or failure of the operation.
+ */
 // Start server
 async function startServer() {
     try {
         await connect();
         app.listen(port, () => {
-            logWithLocation(`Server is running on port ${port}`, "success");
+            logWithLocation(`Server is running on port ${port}`, "response");
         });
     }
     catch (error) {
@@ -32,6 +37,8 @@ async function startServer() {
 }
 startServer();
 // Graceful shutdown
+/* The code snippet `process.on("SIGINT", async () => { ... })` is setting up an event listener for the
+SIGINT signal in Node.js. */
 process.on("SIGINT", async () => {
     console.log("Shutting down gracefully...");
     await client.close();

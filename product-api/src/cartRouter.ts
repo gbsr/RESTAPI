@@ -20,7 +20,6 @@ if (!dbName) {
 	process.exit(1);
 }
 
-
 const client: MongoClient = new MongoClient(connectionString);
 let db: Db;
 let collection: Collection<Cart>;

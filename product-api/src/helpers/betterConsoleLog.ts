@@ -15,16 +15,31 @@ interface LogLevel {
 	logFunction: (message?: string, ...optionalParams: string[]) => void;
 }
 
+/* The `defaultLogLevels` constant is an object that stores predefined log levels along with their
+respective configurations. Each log level is represented as a key-value pair within the object.
+ */
 const defaultLogLevels: { [key: string]: LogLevel } = {
 	info: { name: "INFO", color: COLOR_RESET, logFunction: console.log },
 	warn: { name: "WARN", color: COLOR_ORANGE, logFunction: console.warn },
 	error: { name: "ERROR", color: COLOR_RED, logFunction: console.error },
 	debug: { name: "DEBUG", color: COLOR_BLUE, logFunction: console.debug },
 	success: { name: "SUCCESS", color: COLOR_GREEN, logFunction: console.log },
+	response: {
+		name: "RESPONSE",
+		color: COLOR_YELLOW,
+		logFunction: console.log,
+	},
 };
 
 let customLogLevels: { [key: string]: LogLevel } = {};
 
+/**
+ * The function `formatDate` takes a `Date` object and returns a formatted string representing the date
+ * and time in a specific format.
+ * @param {Date} date - Date object that represents a specific date and time.
+ * @returns The `formatDate` function takes a `Date` object as input and returns a formatted string
+ * representing the date in the format "YYYY-MM-DD HH:mm:ss.SSS".
+ */
 function formatDate(date: Date): string {
 	const pad = (num: number, digits: number = 2) =>
 		num.toString().padStart(digits, "0");
@@ -35,6 +50,18 @@ function formatDate(date: Date): string {
 	)}.${pad(date.getMilliseconds(), 3)}`;
 }
 
+/**
+ * The function `addCustomLogLevel` adds a custom log level with a specified name, color, and log
+ * function to a collection of custom log levels.
+ * @param {string} name - The `name` parameter is a string that represents the custom log level name.
+ * @param {string} color - The `color` parameter is a string that represents the color associated with
+ * the custom log level. This color will be used to distinguish the custom log level in the console
+ * output or any other logging mechanism.
+ * @param logFunction - The `logFunction` parameter in the `addCustomLogLevel` function is a function
+ * that takes a message (optional) and any number of optional parameters. By default, it is set to
+ * `console.log`, but you can provide a custom logging function when calling `addCustomLogLevel`. This
+ * allows you
+ */
 export function addCustomLogLevel(
 	name: string,
 	color: string,
@@ -50,6 +77,16 @@ export function addCustomLogLevel(
 	};
 }
 
+/**
+ * The function `logWithLocation` logs a message with location information such as file name and line
+ * number.
+ * @param {string} message - The `message` parameter is a string that represents the log message you
+ * want to output along with its location information.
+ * @param {string} level - The `level` parameter in the `logWithLocation` function is used to specify
+ * the log level of the message being logged. It can be a string indicating the severity or importance
+ * of the log message, such as "info", "warning", "error", etc. The function then determines the
+ * appropriate
+ */
 export function logWithLocation(message: string, level: string): void {
 	const logLevel =
 		customLogLevels[level.toLowerCase()] ||
