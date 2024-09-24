@@ -52,6 +52,7 @@ productRouter.get("/", async (req: Request, res: Response) => {
 			error: error.message,
 		});
 	}
+	await client.close();
 });
 
 export { productRouter, connect, client };

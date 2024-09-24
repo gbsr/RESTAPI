@@ -11,7 +11,11 @@ const port = process.env.PORT;
 app.use(express.json());
 
 // Routes
-app.use("/", Router);
+app.get("/", (req, res) => {
+	res.status(200).send("Server is running");
+	logWithLocation(`Server status: ${res.statusCode}`, "success");
+});
+
 app.use("/products", productRouter);
 
 // Start server
