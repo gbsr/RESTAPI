@@ -9,11 +9,16 @@ This is a **Product Management API** built with **Node.js** and **Express**, fol
 -   [Installation](#installation)
 -   [API Endpoints](#api-endpoints)
     -   [GET /](#get)
-    -   [GET /products](#get-products)
-    -   [GET /products/:id](#get-productsid)
-    -   [POST /products](#post-products)
-    -   [PUT /products/:id](#put-productsid)
-    -   [DELETE /products/:id](#delete-productsid)
+        -   [Products](#products)
+            -   [GET /products](#get-products)
+            -   [GET /products/:id](#get-productsid)
+            -   [POST /products](#post-products)
+            -   [PUT /products/:id](#put-productsid)
+            -   [DELETE /products/:id](#delete-productsid)
+        -   [Users](#users)
+            To be implemented
+        -   [Cart](#cart)
+            To be implemented
 -   [Error Handling](#error-handling)
 -   [HTTP Status Codes](#http-status-codes)
 -   [License](#license)
@@ -85,7 +90,7 @@ GET /
 
 ---
 
-### GET `/products (to be implemented)`
+### GET `/products`
 
 Retrieve the list of all products.
 
@@ -166,6 +171,31 @@ The API uses appropriate HTTP status codes to indicate the result of each reques
 -   `400 Bad Request`: Invalid request or validation failed.
 -   `404 Not Found`: The requested product does not exist.
 -   `500 Internal Server Error`: Something went wrong on the server.
+
+Inside the helpers directory, there is a file called betterConsoleLog which can be used to log detailed messages to the console.
+This file has some extra functions:
+`logWithLocation(message: string, level: string)`
+
+-   The function `logWithLocation` logs a message with location information such as file name and line
+-   number.
+-   @param {string} message - The `message` parameter is a string that represents the log message you
+    want to output along with its location information.
+-   @param {string} level - The `level` parameter in the `logWithLocation` function is used to specify the log level of the message being logged. It can be a string indicating the severity or importance of the log message, such as "info", "warning", "error", etc.
+
+`logPerformance(label: string, fn: () => any): any`
+
+-   The `logPerformance` function logs the time taken for a given function to execute and returns the result of the function.
+
+-   @param {string} label - The `label` parameter is a string that represents a description or name for the performance measurement being logged.
+
+-   @param fn - A function that you want to measure the performance of.
+
+-   @returns The `logPerformance` function is returning the result of the function `fn` that was passed as a parameter.
+
+-   Example use:
+    const result = logPerformance('Heavy computation', () => {
+    // Your heavy computation here
+    return someResult;
 
 ## HTTP Status Codes
 
