@@ -3,6 +3,8 @@ import "dotenv/config";
 import express, { Router } from "express";
 import { productRouter, connect, client } from "./productRouter.js";
 import { logWithLocation } from "./helpers/betterConsoleLog.js";
+import { userRouter } from "./userRouter.js";
+import { cartRouter } from "./cartRouter.js";
 
 const app = express();
 const port = process.env.PORT;
@@ -17,6 +19,8 @@ app.get("/", (req, res) => {
 });
 
 app.use("/products", productRouter);
+app.use('/users', userRouter)
+app.use('/cart', cartRouter)
 
 // Start server
 async function startServer() {

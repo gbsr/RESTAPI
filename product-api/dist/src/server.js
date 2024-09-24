@@ -2,6 +2,8 @@ import "dotenv/config";
 import express from "express";
 import { productRouter, connect, client } from "./productRouter.js";
 import { logWithLocation } from "./helpers/betterConsoleLog.js";
+import { userRouter } from "./userRouter.js";
+import { cartRouter } from "./cartRouter.js";
 const app = express();
 const port = process.env.PORT;
 // Middleware
@@ -12,6 +14,8 @@ app.get("/", (req, res) => {
     logWithLocation(`Server status: ${res.statusCode}`, "success");
 });
 app.use("/products", productRouter);
+app.use('/users', userRouter);
+app.use('/cart', cartRouter);
 // Start server
 async function startServer() {
     try {
