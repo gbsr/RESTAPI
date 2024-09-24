@@ -26,7 +26,26 @@
  */
 
 import express, { Express, NextFunction, Request, Response } from "express";
-import { router } from "./handleProducts.js";
+import { productRouter } from "./productRouter.js";
+import { MongoClient, Db } from "mongodb";
+import dotenv from "dotenv";
+import { logWithLocation } from "./helpers/betterConsoleLog.js";
+
+// load env variables
+dotenv.config();
+
+const uri = process.env.MONGODB_URI;
+const db = process.env.MONGODB_DB_NAME;
+
+if (!uri || !db) {
+	const errorMessage =
+		"Please define the MONGODB_URI and MONGODB_DB_NAME environment variables";
+	logWithLocation(errorMessage, "error");
+	throw new Error(errorMessage);
+}
+
+export const productapi = db;
+// Express App
 const app: Express = express();
 const port = 1338;
 
@@ -39,9 +58,9 @@ app.use("/", (req: Request, res: Response, next: NextFunction) => {
 });
 
 // Endpoints - imported from separate files
-app.use("/products", router);
-app.use("/cart", router);
-app.use("/users", router);
+app.use("/products", productRouter);
+// app.use("/cart", productRouter);
+// app.use("/users", productRouter);
 
 // start server
 app.listen(port, () => {

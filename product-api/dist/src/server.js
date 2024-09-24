@@ -25,7 +25,20 @@
  * 503 Service Unavailable - The server is currently unable to handle the request
  */
 import express from "express";
-import { router } from "./handleProducts.js";
+import { productRouter } from "./productRouter.js";
+import dotenv from "dotenv";
+import { logWithLocation } from "./helpers/betterConsoleLog.js";
+// load env variables
+dotenv.config();
+const uri = process.env.MONGODB_URI;
+const db = process.env.MONGODB_DB_NAME;
+if (!uri || !db) {
+    const errorMessage = "Please define the MONGODB_URI and MONGODB_DB_NAME environment variables";
+    logWithLocation(errorMessage, "error");
+    throw new Error(errorMessage);
+}
+export const productapi = db;
+// Express App
 const app = express();
 const port = 1338;
 // Middleware
@@ -35,9 +48,9 @@ app.use("/", (req, res, next) => {
     next();
 });
 // Endpoints - imported from separate files
-app.use("/products", router);
-app.use("/cart", router);
-app.use("/users", router);
+app.use("/products", productRouter);
+// app.use("/cart", productRouter);
+// app.use("/users", productRouter);
 // start server
 app.listen(port, () => {
     console.log("Product API server is online on port " + port);
