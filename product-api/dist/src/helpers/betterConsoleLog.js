@@ -1,3 +1,5 @@
+// documented with mintlify
+// https://writer.mintlify.com/
 // Color codes
 export const COLOR_GREEN = "\x1b[32m";
 export const COLOR_ORANGE = "\x1b[38;5;208m";
@@ -19,6 +21,11 @@ const defaultLogLevels = {
     success: { name: "SUCCESS", color: COLOR_GREEN, logFunction: console.log },
     response: {
         name: "RESPONSE",
+        color: COLOR_YELLOW,
+        logFunction: console.log,
+    },
+    server: {
+        name: "SERVER RESPONSE",
         color: COLOR_YELLOW,
         logFunction: console.log,
     },
@@ -78,7 +85,7 @@ export function logWithLocation(message, level) {
         fileName = fileName.split("/").pop() || fileName;
     }
     const timestamp = formatDate(new Date());
-    logLevel.logFunction(`${COLOR_GREEN}--- ${fileName}${COLOR_RESET}:${COLOR_ORANGE}${line},${COLOR_RESET} ${logLevel.color}${BOLD} *[${logLevel.name}]${COLOR_RESET} ${COLOR_BLUE}:${timestamp}:${COLOR_RESET}\n ${message}\n${COLOR_GREEN}--- \n`);
+    logLevel.logFunction(`${COLOR_GREEN}--- ${fileName}${COLOR_RESET}:${COLOR_ORANGE}${line}, ${COLOR_BLUE}:${timestamp}:\n ${logLevel.color}${BOLD}   [${logLevel.name}]${logLevel.color}${BOLD}: ${message}\n${COLOR_RESET}${COLOR_GREEN}\n ${COLOR_RESET}`);
 }
 // Usage examples
 // logWithLocation("This is an info message");
@@ -89,6 +96,15 @@ export function logWithLocation(message, level) {
 // addCustomLogLevel("CRITICAL", COLOR_MAGENTA);
 // logWithLocation("This is a critical message", 'critical');
 // Performance logging
+/**
+ * The `logPerformance` function logs the time taken for a given function to execute and returns the
+ * result of the function.
+ * @param {string} label - The `label` parameter is a string that represents a description or name for
+ * the performance measurement being logged.
+ * @param fn - A function that you want to measure the performance of.
+ * @returns The `logPerformance` function is returning the result of the function `fn` that was passed
+ * as a parameter.
+ */
 export function logPerformance(label, fn) {
     const start = performance.now();
     const result = fn();

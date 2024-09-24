@@ -2,13 +2,15 @@
 
 This is a **Product Management API** built with **Node.js** and **Express**, following RESTful principles. It includes basic CRUD operations for managing products and validates input using `Joi`. This project is part of a tech stack that includes **MongoDB**, **Express**, **Node.js**, and **React** (commonly referred to as the **MERN** stack).
 
+Documented with [https://writer.mintlify.com/](Mintlify Document Writer)
+
 ## Table of Contents
 
 -   [Features](#features)
 -   [Tech Stack](#tech-stack)
 -   [Installation](#installation)
 -   [API Endpoints](#api-endpoints)
-    -   [GET /](#get)
+    -   [GET /](#get) Gets server
         -   [Products](#products)
             -   [GET /products](#get-products)
             -   [GET /products/:id](#get-productsid)
@@ -185,13 +187,9 @@ This file has some extra functions:
 `logPerformance(label: string, fn: () => any): any`
 
 -   The `logPerformance` function logs the time taken for a given function to execute and returns the result of the function.
-
 -   @param {string} label - The `label` parameter is a string that represents a description or name for the performance measurement being logged.
-
 -   @param fn - A function that you want to measure the performance of.
-
 -   @returns The `logPerformance` function is returning the result of the function `fn` that was passed as a parameter.
-
 -   Example use:
     const result = logPerformance('Heavy computation', () => {
     // Your heavy computation here

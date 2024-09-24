@@ -31,7 +31,10 @@ async function startServer() {
 	try {
 		await connect();
 		app.listen(port, () => {
-			logWithLocation(`Server is running on port ${port}`, "response");
+			logWithLocation(
+				`Server is running on port ${port}`,
+				"serverResponse"
+			);
 		});
 	} catch (error) {
 		logWithLocation(`Failed to start server: ${error}`, "error");
