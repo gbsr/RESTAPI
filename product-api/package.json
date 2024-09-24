@@ -5,6 +5,7 @@
 	"type": "module",
 	"scripts": {
 		"build-and-run": "tsc && node dist/src/server.js",
+		"server": "rm -rf ./dist && tsc && node dist/src/server.js",
 		"build": "tsc",
 		"clean": "rm -rf ./dist",
 		"start": "node dist/src/server.js"
