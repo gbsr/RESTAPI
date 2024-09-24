@@ -27,24 +27,22 @@
 
 import express, { Express, NextFunction, Request, Response } from "express";
 import { productRouter } from "./productRouter.js";
-import { MongoClient, Db } from "mongodb";
 import dotenv from "dotenv";
 import { logWithLocation } from "./helpers/betterConsoleLog.js";
+import { Db, Collection, MongoClient } from "mongodb";
+import { Product } from "./data/products.js";
 
 // load env variables
 dotenv.config();
 
-const uri = process.env.MONGODB_URI;
-const db = process.env.MONGODB_DB_NAME;
+// if (!uri || !db) {
+// 	const errorMessage =
+// 		"Please define the MONGODB_URI and MONGODB_DB_NAME environment variables";
+// 	logWithLocation(errorMessage, "error");
+// 	throw new Error(errorMessage);
+// }
 
-if (!uri || !db) {
-	const errorMessage =
-		"Please define the MONGODB_URI and MONGODB_DB_NAME environment variables";
-	logWithLocation(errorMessage, "error");
-	throw new Error(errorMessage);
-}
-
-export const productapi = db;
+// export const productapi = db;
 // Express App
 const app: Express = express();
 const port = 1338;
@@ -66,3 +64,28 @@ app.use("/products", productRouter);
 app.listen(port, () => {
 	console.log("Product API server is online on port " + port);
 });
+
+async function connect() {
+	const con: string | undefined = process.env.CONNECTION_STRING;
+	if (!con) {
+		console.log("ERROR: connection string not found!");
+		return;
+	}
+	const client: MongoClient = new MongoClient(con);
+	try {
+		const db: Db = await client.db("products-api");
+		const collection: Collection<Product> =
+			db.collection<Product>("products");
+
+		console.log("number of products:", await collection.countDocuments());
+		logWithLocation(`Program executed successfully.`, "success");
+
+		// do more stuff here
+	} catch (error: any) {
+		console.log("An error occurred. " + error.message);
+	} finally {
+		await client.close();
+	}
+}
+
+connect();
