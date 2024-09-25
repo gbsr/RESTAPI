@@ -1,8 +1,8 @@
 import { Router, Request, Response } from "express";
 import { Collection } from "mongodb";
-import { User } from "./data/users.js";
-import { logWithLocation } from "./helpers/betterConsoleLog.js";
-import { db } from "../src/data/dbConnection.js";
+import { User } from "../data/interface/users.js";
+import { logWithLocation } from "../helpers/betterConsoleLog.js";
+import { db } from "../data/dbConnection.js";
 const userRouter = Router();
 let collection: Collection<User>;
 

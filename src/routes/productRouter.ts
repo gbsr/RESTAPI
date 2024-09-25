@@ -1,9 +1,9 @@
 import { Router, Request, Response } from "express";
 import { Collection, ObjectId } from "mongodb";
-import { logWithLocation } from "./helpers/betterConsoleLog.js";
-import { db } from "../src/data/dbConnection.js";
-import { User } from "./data/users.js";
-import { Product } from "./data/products.js";
+import { logWithLocation } from "../helpers/betterConsoleLog.js";
+import { db } from "../data/dbConnection.js";
+import { User } from "../data/interface/users.js";
+import { Product } from "../data/interface/products.js";
 
 const productRouter = Router();
 let collection: Collection<Product>;

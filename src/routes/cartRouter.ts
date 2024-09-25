@@ -1,8 +1,8 @@
 import { Router, Request, Response } from "express";
 import { Collection } from "mongodb";
-import { Cart } from "./data/cart.js";
-import { logWithLocation } from "./helpers/betterConsoleLog.js";
-import { db } from "../src/data/dbConnection.js";
+import { Cart } from "../data/interface/cart.js";
+import { logWithLocation } from "../helpers/betterConsoleLog.js";
+import { db } from "../data/dbConnection.js";
 
 const cartRouter = Router();
 let collection: Collection<Cart>;

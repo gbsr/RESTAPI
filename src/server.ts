@@ -1,8 +1,8 @@
 import "dotenv/config";
 import express from "express";
-import { productRouter } from "./productRouter.js";
-import { userRouter } from "./userRouter.js";
-import { cartRouter } from "./cartRouter.js";
+import { productRouter } from "./routes/productRouter.js";
+import { userRouter } from "./routes/userRouter.js";
+import { cartRouter } from "./routes/cartRouter.js";
 import { logWithLocation } from "./helpers/betterConsoleLog.js";
 import { connect, client } from "./data/dbConnection.js";
 
