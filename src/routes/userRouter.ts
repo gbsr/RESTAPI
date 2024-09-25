@@ -64,4 +64,49 @@ userRouter.post("/", async (req: Request, res: Response) => {
 	}
 });
 
-export { userRouter };
+// Change user 
+userRouter.put("/:id", async (req: Request, res: Response) => {
+	const userId = req.params.id;
+	
+	if (!ObjectId.isValid(userId)) {
+		res.status(400).json({ message: "Invalid user ID" });
+		return;
+	}
+	
+	const { error, value } = userSchema.validate(req.body);
+	
+	if (error) {
+		logWithLocation(`Validation error: ${error.message}`, "error");
+		res.status(400).json({ message: "Invalid user data", error: error.message });
+		return;
+	}
+	
+	try {
+		const updatedUser = await collection.updateOne(
+			{ _id: new ObjectId(userId) },
+			{ $set: value }
+			);
+			
+			if (updatedUser.matchedCount === 0) {
+				res.status(404).json({ message: "User not found" });
+				return;
+			}
+			
+			if (updatedUser.modifiedCount === 0) {
+				res.status(200).json({ message: "No changes were made to the user" });
+				return;
+			}
+			
+			res.status(200).json({
+				message: "User updated successfully",
+				modifiedCount: updatedUser.modifiedCount
+			});
+		} catch (error: any) {
+			logWithLocation(`Error updating user: ${error.message}`, "error");
+			res.status(500).json({ message: "Error updating user", error: error.message });
+		}
+	});
+	
+	
+	export { userRouter };
+	
