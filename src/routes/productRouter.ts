@@ -15,6 +15,10 @@ const productSchema = Joi.object({
 	amountInStock: Joi.number().required(),
 });
 
+const idSchema = Joi.object({
+	_id: Joi.string().hex().length(24).required(),
+})
+
 async function getProduct(id: ObjectId) {
 	const product = await collection.findOne({ _id: new ObjectId(id) });
 	return product;
@@ -28,13 +32,6 @@ async function getAllProducts() {
 async function addProduct(product: Product) {
 	const result = await collection.insertOne(product);
 	return result;
-}
-
-interface ValidationResult {
-	isValid: boolean;
-	item: Product | User | null;
-	statusCode: number;
-	message: string;
 }
 
 /**
@@ -52,88 +49,6 @@ interface ValidationResult {
 * - `statusCode`: a number indicating the status code of the validation result.
 * - `message`: a string message describing the validation result.
 */
-
-// TODO: Proper validation with joi?
-// TODO: Edge-case with negative numbers
-// TODO: Refactor validation to it's own file
-function validate(item: Product | User | null, id: ObjectId): ValidationResult {
-	logWithLocation("Validating item..", "info");
-
-	if (!item) {
-		logWithLocation(`Item with id ${id} not found`, "error");
-		return {
-			isValid: false,
-			item: null,
-			statusCode: 404,
-			message: "Item not found",
-		};
-	}
-
-	// Is it product?
-	if ("price" in item && "image" in item && "amountInStock" in item) {
-		// Validate Product structure
-		if (
-			typeof item.name === "string" &&
-			typeof item.price === "number" &&
-			typeof item.image === "string" &&
-			typeof item.amountInStock === "number"
-		) {
-			// It was valid, so it is a product
-			logWithLocation(`Valid Product found: ${item.name}`, "success");
-			return {
-				isValid: true,
-				item,
-				statusCode: 200,
-				message: "Valid Product found",
-			};
-		} else {
-			// no it wasn't a product dammit
-			logWithLocation(`Invalid Product structure: ${item.name}`, "error");
-			return {
-				isValid: false,
-				item: null,
-				statusCode: 400,
-				message: "Invalid Product structure",
-			};
-		}
-	}
-
-	// Maybe its a user?
-	if ("isAdmin" in item) {
-		// Validate User structure
-		if (
-			typeof item.name === "string" &&
-			typeof item.isAdmin === "boolean"
-		) {
-			// It was a user
-			logWithLocation(`Valid User found`, "success");
-			return {
-				isValid: true,
-				item,
-				statusCode: 200,
-				message: "Valid User found",
-			};
-		} else {
-			// Just kdding, no it wasnt
-			logWithLocation(`Invalid User structure`, "error");
-			return {
-				isValid: false,
-				item: null,
-				statusCode: 400,
-				message: "Invalid User structure",
-			};
-		}
-	}
-
-	// Is it neither?
-	logWithLocation(`Invalid item type`, "error");
-	return {
-		isValid: false,
-		item: null,
-		statusCode: 400,
-		message: "Invalid item type",
-	};
-}
 
 // Initialize collection
 productRouter.use((req: Request, res: Response, next) => {
@@ -167,22 +82,28 @@ productRouter.get("/", async (req: Request, res: Response) => {
 /* This part of the code defines a route handler for GET requests to fetch a specific product by its
 ID. Returning the json in the response returns a json-object, then exits the function */
 productRouter.get("/:id", async (req: Request, res: Response) => {
-	try {
-		const id = new ObjectId(req.params.id);
-		logWithLocation(`Trying to get product with id ${id}`, "info");
-		const product = await getProduct(id);
-		const result = validate(product, id);
-		res.status(result.statusCode);
-		logWithLocation(`${res.statusCode}`, "server");
-		res.json({ isValid: result.isValid, message: result.message });
-	} catch (error: any) {
-		logWithLocation(`Error: ${error.message}`, "error");
-		logWithLocation(`${res.statusCode}`, "server");
-		res.status(500).json({
-			message: "Internal server error",
-			error: error.message,
-		});
-	}
+	 	try {
+			const { error } = idSchema.validate({_id: req.params.id});
+
+			if (error) {
+				logWithLocation(`Validation error: ${error.message}`, "error");
+				res.status(400).json({ message: "Invalid product data", error: error.message });
+				return;
+			}
+			const id = new ObjectId(req.params.id)
+			const product = await collection.findOne({_id: id});
+		
+		if(!product) {
+			return res.status(404).json({ message: "Not found" })
+		}
+		res.status(200).json(product);
+		}
+		catch (error: any ) {
+
+		}
+		
+		logWithLocation(`Did not recieved product. `, "error")
+	
 });
 
 /* The `productRouter.post("/post", async (req: Request, res: Response) => { ... }` function is
@@ -217,3 +138,90 @@ productRouter.post("/", async (req: Request, res: Response) => {
 });
 
 export { productRouter };
+
+
+// function validate(item: Product | User | null, id: ObjectId): ValidationResult {
+// 	logWithLocation("Validating item..", "info");
+
+// 	if (!item) {
+// 		logWithLocation(`Item with id ${id} not found`, "error");
+// 		return {
+// 			isValid: false,
+// 			item: null,
+// 			statusCode: 404,
+// 			message: "Item not found",
+// 		};
+// 	}
+
+// 	// Is it product?
+// 	if ("price" in item && "image" in item && "amountInStock" in item) {
+// 		// Validate Product structure
+// 		if (
+// 			typeof item.name === "string" &&
+// 			typeof item.price === "number" &&
+// 			typeof item.image === "string" &&
+// 			typeof item.amountInStock === "number"
+// 		) {
+// 			// It was valid, so it is a product
+// 			logWithLocation(`Valid Product found: ${item.name}`, "success");
+// 			return {
+// 				isValid: true,
+// 				item,
+// 				statusCode: 200,
+// 				message: "Valid Product found",
+// 			};
+// 		} else {
+// 			// no it wasn't a product dammit
+// 			logWithLocation(`Invalid Product structure: ${item.name}`, "error");
+// 			return {
+// 				isValid: false,
+// 				item: null,
+// 				statusCode: 400,
+// 				message: "Invalid Product structure",
+// 			};
+// 		}
+// 	}
+
+// 	// Maybe its a user?
+// 	if ("isAdmin" in item) {
+// 		// Validate User structure
+// 		if (
+// 			typeof item.name === "string" &&
+// 			typeof item.isAdmin === "boolean"
+// 		) {
+// 			// It was a user
+// 			logWithLocation(`Valid User found`, "success");
+// 			return {
+// 				isValid: true,
+// 				item,
+// 				statusCode: 200,
+// 				message: "Valid User found",
+// 			};
+// 		} else {
+// 			// Just kdding, no it wasnt
+// 			logWithLocation(`Invalid User structure`, "error");
+// 			return {
+// 				isValid: false,
+// 				item: null,
+// 				statusCode: 400,
+// 				message: "Invalid User structure",
+// 			};
+// 		}
+// 	}
+
+// 	// Is it neither?
+// 	logWithLocation(`Invalid item type`, "error");
+// 	return {
+// 		isValid: false,
+// 		item: null,
+// 		statusCode: 400,
+// 		message: "Invalid item type",
+// 	};
+// }
+
+// interface ValidationResult {
+// 	// 	isValid: boolean;
+// 	// 	item: Product | User | null;
+// 	// 	statusCode: number;
+// 	// 	message: string;
+// 	// }
