@@ -36,18 +36,14 @@ userRouter.get("/", async (req: Request, res: Response) => {
 
 // Add a new user
 userRouter.post("/", async (req: Request, res: Response) => {
-	const { error, value } = userSchema.validate(req.body);
+	const newUser: User = req.body;
+	const { error } = userSchema.validate(newUser);
 	
 	if (error) {
 		logWithLocation(`Validation error: ${error.message}`, "error");
 		res.status(400).json({ message: "Invalid user data", error: error.message });
 		return;
 	}
-	
-	const newUser: User = {
-		...value,
-		_id: new ObjectId(),
-	};
 	
 	try {
 		await collection.insertOne(newUser);

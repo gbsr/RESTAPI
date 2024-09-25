@@ -4,9 +4,16 @@ import { logWithLocation } from "../helpers/betterConsoleLog.js";
 import { db } from "../data/dbConnection.js";
 import { User } from "../data/interface/users.js";
 import { Product } from "../data/interface/products.js";
+import Joi from 'joi';
 
 const productRouter = Router();
 let collection: Collection<Product>;
+
+const productSchema = Joi.object({
+	name: Joi.string().min(1).required(),
+	price: Joi.number().greater(0).required(),
+	amountInStock: Joi.number().required(),
+});
 
 async function getProduct(id: ObjectId) {
 	const product = await collection.findOne({ _id: new ObjectId(id) });
@@ -31,20 +38,20 @@ interface ValidationResult {
 }
 
 /**
- * The function `validate` checks if a given item exists and returns a
- * validation result with status information.
- * @param {Product | User | null} item - The `item` parameter in the `validate`
- * function can be either a `Product`, a `User`, or `null`.
- * @param {ObjectId} id - The `id` parameter in the `validate` function is of
- * type `ObjectId`. It is used to identify the specific item being validated,
- * whether it's a `Product` or a `User`.
- * @returns The `validate` function returns a `ValidationResult` object with the
- * following properties:
- * - `isValid`: a boolean indicating whether the item is valid or not.
- * - `item`: the validated item which can be a `Product`, `User`, or `null`.
- * - `statusCode`: a number indicating the status code of the validation result.
- * - `message`: a string message describing the validation result.
- */
+* The function `validate` checks if a given item exists and returns a
+* validation result with status information.
+* @param {Product | User | null} item - The `item` parameter in the `validate`
+* function can be either a `Product`, a `User`, or `null`.
+* @param {ObjectId} id - The `id` parameter in the `validate` function is of
+* type `ObjectId`. It is used to identify the specific item being validated,
+* whether it's a `Product` or a `User`.
+* @returns The `validate` function returns a `ValidationResult` object with the
+* following properties:
+* - `isValid`: a boolean indicating whether the item is valid or not.
+* - `item`: the validated item which can be a `Product`, `User`, or `null`.
+* - `statusCode`: a number indicating the status code of the validation result.
+* - `message`: a string message describing the validation result.
+*/
 
 // TODO: Proper validation with joi?
 // TODO: Edge-case with negative numbers
@@ -182,34 +189,29 @@ productRouter.get("/:id", async (req: Request, res: Response) => {
 handling a POST request to create a new product. It also validating whether the product is valid or
 not. If the product is valid, it will insert the product into the database. If the product is not
 valid, it will return an error message. */
-productRouter.post("/post", async (req: Request, res: Response) => {
+productRouter.post("/", async (req: Request, res: Response) => {
 	const newProduct: Product = req.body;
 
-	const id = new ObjectId();
-	newProduct._id = id;
 
-	const validationResult = validate(newProduct, id);
-
-	if (validationResult.isValid) {
-		try {
-			await collection.insertOne(newProduct);
-			res.status(201).json({
-				message: "Product created successfully",
-				product: newProduct,
-			});
-		} catch (error: any) {
-			logWithLocation(
-				`Error creating product: ${error.message}`,
-				"error"
-			);
-			res.status(500).json({
-				message: "Error creating product",
-				error: error.message,
-			});
-		}
-	} else {
-		res.status(validationResult.statusCode).json({
-			message: validationResult.message,
+	const { error } = productSchema.validate(newProduct);
+	
+	if (error) {
+		logWithLocation(`Validation error: ${error.message}`, "error");
+		res.status(400).json({ message: "Invalid product data", error: error.message });
+		return;
+	}
+	
+	try {
+		await collection.insertOne(newProduct);
+		res.status(201).json({
+			message: "Product created successfully",
+			product: newProduct,
+		});
+	} catch (error: any) {
+		logWithLocation(`Error creating product: ${error.message}`, "error");
+		res.status(500).json({
+			message: "Error creating product",
+			error: error.message,
 		});
 	}
 });
