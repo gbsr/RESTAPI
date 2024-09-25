@@ -1,10 +1,18 @@
 import { Router, Request, Response } from "express";
-import { Collection } from "mongodb";
+import { Collection, ObjectId } from "mongodb";
 import { User } from "../data/interface/users.js";
 import { logWithLocation } from "../helpers/betterConsoleLog.js";
 import { db } from "../data/dbConnection.js";
+import Joi from 'joi';
+
 const userRouter = Router();
 let collection: Collection<User>;
+
+// Joi schema for user validation
+const userSchema = Joi.object({
+	name: Joi.string().min(1).required(),
+	isAdmin: Joi.boolean().required(),
+});
 
 // Initialize collection
 userRouter.use((req, res, next) => {
@@ -13,9 +21,6 @@ userRouter.use((req, res, next) => {
 });
 
 // List all users
-/* This part of the code defines a route handler for a GET request to the root path ("/") of the
-userRouter. When a GET request is made to this path, the handler function is executed
-asynchronously. */
 userRouter.get("/", async (req: Request, res: Response) => {
 	try {
 		const users = await collection.find().toArray();
@@ -24,6 +29,36 @@ userRouter.get("/", async (req: Request, res: Response) => {
 		logWithLocation(`Error fetching users: ${error.message}`, "error");
 		res.status(500).json({
 			message: "Error fetching users",
+			error: error.message,
+		});
+	}
+});
+
+// Add a new user
+userRouter.post("/", async (req: Request, res: Response) => {
+	const { error, value } = userSchema.validate(req.body);
+	
+	if (error) {
+		logWithLocation(`Validation error: ${error.message}`, "error");
+		res.status(400).json({ message: "Invalid user data", error: error.message });
+		return;
+	}
+	
+	const newUser: User = {
+		...value,
+		_id: new ObjectId(),
+	};
+	
+	try {
+		await collection.insertOne(newUser);
+		res.status(201).json({
+			message: "User created successfully",
+			user: newUser,
+		});
+	} catch (error: any) {
+		logWithLocation(`Error creating user: ${error.message}`, "error");
+		res.status(500).json({
+			message: "Error creating user",
 			error: error.message,
 		});
 	}
