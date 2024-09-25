@@ -75,7 +75,7 @@ Start the development server:
 npm run server
 ```
 
-The server will be live on `http://localhost:1338`.
+The server will be live on `http://localhost:1338` (or your port in .env then).
 Check package.json for other scripts, such as clean, build and so on.
 
 ## API Endpoints
@@ -104,7 +104,7 @@ GET /products
 
 ---
 
-### GET `/products/:id (to be implemented)`
+### GET `/products/:id`
 
 Retrieve a specific product by its `id`.
 
