@@ -27,7 +27,6 @@ export const addProduct = async (
 				error: error.message,
 			});
 		}
-
 		const product: Product = {
 			_id: new ObjectId(),
 			name,
