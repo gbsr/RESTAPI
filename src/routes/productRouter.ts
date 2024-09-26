@@ -2,16 +2,19 @@ import { Router, Request, Response } from "express";
 import { Collection, ObjectId } from "mongodb";
 import { logWithLocation } from "../helpers/betterConsoleLog.js";
 import { db } from "../data/dbConnection.js";
-import { User } from "../data/interface/users.js";
+// import { User } from "../data/interface/users.js";
 import { Product } from "../data/interface/products.js";
 import Joi from "joi";
+import { addProduct } from "../crud/products/addProduct.js";
+import { deleteProduct } from "../crud/products/deleteProduct.js";
 
 const productRouter = Router();
 let collection: Collection<Product>;
 
-const productSchema = Joi.object({
+export const productSchema = Joi.object({
 	name: Joi.string().min(1).required(),
 	price: Joi.number().greater(0).required(),
+	image: Joi.string().required(),
 	amountInStock: Joi.number().required(),
 });
 
@@ -29,11 +32,6 @@ async function getAllProducts() {
 	return products;
 }
 
-async function addProduct(product: Product) {
-	const result = await collection.insertOne(product);
-	return result;
-}
-
 // Initialize collection
 productRouter.use((req: Request, res: Response, next) => {
 	collection = db.collection<Product>("products");
@@ -47,15 +45,23 @@ productRouter.get("/", async (req: Request, res: Response) => {
 		logWithLocation(`Trying to get all products..`, "info");
 		const products = await getAllProducts();
 		if (!products) {
-			logWithLocation(`${res.statusCode} - No products found..`, "error");
+			res.status(404);
+			logWithLocation(`No products found..`, "server");
+			logWithLocation(`${res.statusCode}`, "error");
 			return res.status(404).json({
-				message: "Product not found",
+				message: "Products not found",
 			});
 		}
 		logWithLocation(`${res.statusCode} - Products found!`, "success");
+		res.status(200);
+		logWithLocation(`${res.statusCode}`, "server");
+
 		res.status(200).json(products);
 	} catch (error: any) {
 		logWithLocation(`Error fetching products: ${error.message}`, "error");
+		res.status(500);
+		logWithLocation(`${res.statusCode}`, "server");
+
 		res.status(500).json({
 			message: "Error fetching products",
 			error: error.message,
@@ -101,34 +107,15 @@ handling a POST request to create a new product. It also validating whether the 
 not. If the product is valid, it will insert the product into the database. If the product is not
 valid, it will return an error message. */
 productRouter.post("/post", async (req: Request, res: Response) => {
-	const newProduct: Product = req.body;
-
-	const { error } = productSchema.validate(newProduct);
-
-	if (error) {
-		logWithLocation(`Validation error: ${error.message}`, "error");
-		res.status(400).json({
-			message: "Invalid product data",
-			error: error.message,
-		});
-		return;
-	}
-
-	try {
-		await collection.insertOne(newProduct);
-		res.status(201).json({
-			message: "Product created successfully",
-			product: newProduct,
-		});
-	} catch (error: any) {
-		logWithLocation(`Error creating product: ${error.message}`, "error");
-		res.status(500).json({
-			message: "Error creating product",
-			error: error.message,
-		});
-	}
+	await addProduct(req, res, collection);
 });
 
+/* The code `productRouter.delete("/:id", async (req: Request, res: Response) => { await
+deleteProduct(req, res, collection); });` is defining a route handler for handling a DELETE request
+to delete a product. */
+productRouter.delete("/:id", async (req: Request, res: Response) => {
+	await deleteProduct(req, res, collection);
+});
 export { productRouter };
 
 /**
