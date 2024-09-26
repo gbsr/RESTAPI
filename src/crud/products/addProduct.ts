@@ -11,10 +11,7 @@ export const addProduct = async (
 ) => {
 	const { name, price, image, amountInStock } = req.body;
 	try {
-		logWithLocation(
-			`Trying to add product: ${name} with id ${req.params.id}`,
-			"info"
-		);
+		logWithLocation(`Trying to add product: ${name}`, "info");
 		const { error } = productSchema.validate({
 			name,
 			price,

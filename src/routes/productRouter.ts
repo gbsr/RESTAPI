@@ -7,6 +7,7 @@ import { Product } from "../data/interface/products.js";
 import Joi from "joi";
 import { addProduct } from "../crud/products/addProduct.js";
 import { deleteProduct } from "../crud/products/deleteProduct.js";
+import { getProduct } from "../crud/products/getProduct.js";
 
 const productRouter = Router();
 let collection: Collection<Product>;
@@ -21,11 +22,6 @@ export const productSchema = Joi.object({
 const idSchema = Joi.object({
 	_id: Joi.string().hex().length(24).required(),
 });
-
-async function getProduct(id: ObjectId) {
-	const product = await collection.findOne({ _id: new ObjectId(id) });
-	return product;
-}
 
 async function getAllProducts() {
 	const products = await collection.find().toArray();
@@ -72,34 +68,8 @@ productRouter.get("/", async (req: Request, res: Response) => {
 /* This part of the code defines a route handler for GET requests to fetch a specific product by its
 ID. Returning the json in the response returns a json-object, then exits the function */
 productRouter.get("/:id", async (req: Request, res: Response) => {
-	try {
-		const { error } = idSchema.validate({ _id: req.params.id });
-
-		if (error) {
-			logWithLocation(`Validation error: ${error.message}`, "error");
-			res.status(400).json({
-				message: "Invalid product data",
-				error: error.message,
-			});
-			return;
-		}
-		const id = new ObjectId(req.params.id);
-		const product = await collection.findOne({ _id: id });
-		logWithLocation(
-			`Trying to find product: ${product?.name} with id: ${id}`,
-			"info"
-		);
-
-		if (!product) {
-			logWithLocation(`Can not find product with id: ${id}`, "error");
-			return res.status(404).json({ message: "Not found" });
-		}
-		logWithLocation(
-			`Found product with ${product.name} with id: ${id}`,
-			"success"
-		);
-		res.status(200).json(product);
-	} catch (error: any) {}
+	const id = new ObjectId();
+	await getProduct(req, res, collection, id);
 });
 
 /* The `productRouter.post("/post", async (req: Request, res: Response) => { ... }` function is
