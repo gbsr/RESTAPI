@@ -4,7 +4,7 @@ import { logWithLocation } from "../helpers/betterConsoleLog.js";
 import { db } from "../data/dbConnection.js";
 import { User } from "../data/interface/users.js";
 import { Product } from "../data/interface/products.js";
-import Joi from 'joi';
+import Joi from "joi";
 
 const productRouter = Router();
 let collection: Collection<Product>;
@@ -17,7 +17,7 @@ const productSchema = Joi.object({
 
 const idSchema = Joi.object({
 	_id: Joi.string().hex().length(24).required(),
-})
+});
 
 async function getProduct(id: ObjectId) {
 	const product = await collection.findOne({ _id: new ObjectId(id) });
@@ -33,22 +33,6 @@ async function addProduct(product: Product) {
 	const result = await collection.insertOne(product);
 	return result;
 }
-
-/**
-* The function `validate` checks if a given item exists and returns a
-* validation result with status information.
-* @param {Product | User | null} item - The `item` parameter in the `validate`
-* function can be either a `Product`, a `User`, or `null`.
-* @param {ObjectId} id - The `id` parameter in the `validate` function is of
-* type `ObjectId`. It is used to identify the specific item being validated,
-* whether it's a `Product` or a `User`.
-* @returns The `validate` function returns a `ValidationResult` object with the
-* following properties:
-* - `isValid`: a boolean indicating whether the item is valid or not.
-* - `item`: the validated item which can be a `Product`, `User`, or `null`.
-* - `statusCode`: a number indicating the status code of the validation result.
-* - `message`: a string message describing the validation result.
-*/
 
 // Initialize collection
 productRouter.use((req: Request, res: Response, next) => {
@@ -82,46 +66,54 @@ productRouter.get("/", async (req: Request, res: Response) => {
 /* This part of the code defines a route handler for GET requests to fetch a specific product by its
 ID. Returning the json in the response returns a json-object, then exits the function */
 productRouter.get("/:id", async (req: Request, res: Response) => {
-	 	try {
-			const { error } = idSchema.validate({_id: req.params.id});
+	try {
+		const { error } = idSchema.validate({ _id: req.params.id });
 
-			if (error) {
-				logWithLocation(`Validation error: ${error.message}`, "error");
-				res.status(400).json({ message: "Invalid product data", error: error.message });
-				return;
-			}
-			const id = new ObjectId(req.params.id)
-			const product = await collection.findOne({_id: id});
-		
-		if(!product) {
-			return res.status(404).json({ message: "Not found" })
+		if (error) {
+			logWithLocation(`Validation error: ${error.message}`, "error");
+			res.status(400).json({
+				message: "Invalid product data",
+				error: error.message,
+			});
+			return;
 		}
+		const id = new ObjectId(req.params.id);
+		const product = await collection.findOne({ _id: id });
+		logWithLocation(
+			`Trying to find product: ${product?.name} with id: ${id}`,
+			"info"
+		);
+
+		if (!product) {
+			logWithLocation(`Can not find product with id: ${id}`, "error");
+			return res.status(404).json({ message: "Not found" });
+		}
+		logWithLocation(
+			`Found product with ${product.name} with id: ${id}`,
+			"success"
+		);
 		res.status(200).json(product);
-		}
-		catch (error: any ) {
-
-		}
-		
-		logWithLocation(`Did not recieved product. `, "error")
-	
+	} catch (error: any) {}
 });
 
 /* The `productRouter.post("/post", async (req: Request, res: Response) => { ... }` function is
 handling a POST request to create a new product. It also validating whether the product is valid or
 not. If the product is valid, it will insert the product into the database. If the product is not
 valid, it will return an error message. */
-productRouter.post("/", async (req: Request, res: Response) => {
+productRouter.post("/post", async (req: Request, res: Response) => {
 	const newProduct: Product = req.body;
 
-
 	const { error } = productSchema.validate(newProduct);
-	
+
 	if (error) {
 		logWithLocation(`Validation error: ${error.message}`, "error");
-		res.status(400).json({ message: "Invalid product data", error: error.message });
+		res.status(400).json({
+			message: "Invalid product data",
+			error: error.message,
+		});
 		return;
 	}
-	
+
 	try {
 		await collection.insertOne(newProduct);
 		res.status(201).json({
@@ -139,7 +131,21 @@ productRouter.post("/", async (req: Request, res: Response) => {
 
 export { productRouter };
 
-
+/**
+ * The function `validate` checks if a given item exists and returns a
+ * validation result with status information.
+ * @param {Product | User | null} item - The `item` parameter in the `validate`
+ * function can be either a `Product`, a `User`, or `null`.
+ * @param {ObjectId} id - The `id` parameter in the `validate` function is of
+ * type `ObjectId`. It is used to identify the specific item being validated,
+ * whether it's a `Product` or a `User`.
+ * @returns The `validate` function returns a `ValidationResult` object with the
+ * following properties:
+ * - `isValid`: a boolean indicating whether the item is valid or not.
+ * - `item`: the validated item which can be a `Product`, `User`, or `null`.
+ * - `statusCode`: a number indicating the status code of the validation result.
+ * - `message`: a string message describing the validation result.
+ */
 // function validate(item: Product | User | null, id: ObjectId): ValidationResult {
 // 	logWithLocation("Validating item..", "info");
 
