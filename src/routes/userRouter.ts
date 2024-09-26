@@ -14,6 +14,10 @@ const userSchema = Joi.object({
 	isAdmin: Joi.boolean().required(),
 });
 
+const idSchema = Joi.object({
+	_id: Joi.string().hex().length(24).required(),
+})
+
 // Initialize collection
 userRouter.use((req, res, next) => {
 	collection = db.collection<User>("users");
@@ -32,6 +36,31 @@ userRouter.get("/", async (req: Request, res: Response) => {
 			error: error.message,
 		});
 	}
+});
+
+userRouter.get("/:id", async (req: Request, res: Response) => {
+	try {
+	   const { error } = idSchema.validate({_id: req.params.id});
+
+	   if (error) {
+		   logWithLocation(`Validation error: ${error.message}`, "error");
+		   res.status(400).json({ message: "Invalid product data", error: error.message });
+		   return;
+	   }
+	   const id = new ObjectId(req.params.id)
+	   const product = await collection.findOne({_id: id});
+   
+   if(!product) {
+	   return res.status(404).json({ message: "Not found" })
+   }
+   res.status(200).json(product);
+   }
+   catch (error: any ) {
+
+   }
+   
+   logWithLocation(`Did not recieved product. `, "error")
+
 });
 
 // Add a new user
@@ -102,6 +131,29 @@ userRouter.put("/:id", async (req: Request, res: Response) => {
 			res.status(500).json({ message: "Error updating user", error: error.message });
 		}
 	});
+
+	userRouter.delete("/:id", async(req: Request, res: Response) => {
+		const userId = req.params.id
+
+		if(!ObjectId.isValid(userId)) {
+			res.status(400).json({ message: "Invalid user ID"})
+			return
+		}
+		try {
+			const objectId = new ObjectId(userId)
+			const result = await collection.deleteOne({ _id: objectId })
+
+			if(result.deletedCount === 0) {
+				res.status(404).json({ message: "User not found" })
+				return
+			}
+
+			res.status(200).json({ message: "User deleted successfully" })
+		} catch(error: any) {
+			logWithLocation(`Error deleting user: ${error.message}`, "error");
+			res.status(500).json({ message: "Error deleting user", error: error.message });
+		}
+	})
 	
 	
 	export { userRouter };
