@@ -77,11 +77,71 @@ cartRouter.post("/add/:userId/:productId/:amount", async (req: Request, res: Res
 
 
   // ____________ PUT _____________ //
-  // to do uppdate amount in cart
+
+  cartRouter.put("/update/:userId/:productId/:amount", async (req: Request, res: Response) => {
+	const { userId, productId, amount } = req.params;
+
+	try{
+		const userObjectId = new ObjectId(userId);
+		const productObjectId = new ObjectId(productId);
+
+		const existingCartItem = await collection.findOne({
+			userId: userObjectId,
+			productId: productObjectId,
+		});
+
+		if(existingCartItem){
+			const updatedAmount = parseInt(amount);
+			await collection.updateOne(
+				{ _id: existingCartItem._id },
+				{ $set: { amount: updatedAmount } }
+			);
+			res.status(200).json({ message: 'Product quantity updated in cart', updatedAmount });
+		} else {
+			res.status(404).json({ message: 'Product not found in cart' });
+		}
+	}
+	catch (error: any) {
+		logWithLocation(`Error updating product in cart: ${error.message}`, "error");
+		res.status(500).json({
+			message: "Error updating product in cart",
+			error: error.message,
+		});
+	}
+  });
 
 
 // ____________ DELETE _____________ //
- // to do delete product from cart
+ 
+
+ cartRouter.delete("/delete/:userId/:productId", async (req: Request, res: Response) => {
+	const { userId, productId } = req.params;
+
+	try{
+		const userObjectId = new ObjectId(userId);
+		const productObjectId = new ObjectId(productId);
+
+		const existingCartItem = await collection.findOne({
+			userId: userObjectId,
+			productId: productObjectId,
+		});
+
+		if(existingCartItem){
+			await collection.deleteOne({ _id: existingCartItem._id });
+			res.status(200).json({ message: 'Product deleted from cart' });
+		}
+		else {
+			res.status(404).json({ message: 'Product not found in cart' });
+		}
+	}
+	catch (error: any) {
+		logWithLocation(`Error deleting product from cart: ${error.message}`, "error");
+		res.status(500).json({
+			message: "Error deleting product from cart",
+			error: error.message,
+		});
+	}
+  });
 
 
   export { cartRouter };
