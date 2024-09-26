@@ -48,6 +48,7 @@ export const deleteProduct = async (
 			res.json({ message: "Product deleted successfully" });
 		} else {
 			res.status(404);
+			logWithLocation(`Product not found with id: ${id}`, "error");
 			logWithLocation(`${res.statusCode}`, "server");
 			res.json({ message: "Product not found" });
 		}

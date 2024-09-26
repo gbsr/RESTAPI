@@ -117,7 +117,7 @@ export function logWithLocation(message: string, level: string): void {
 	const timestamp = formatDate(new Date());
 
 	logLevel.logFunction(
-		`${COLOR_GREEN}--- ${fileName}${COLOR_RESET}:${COLOR_ORANGE}${line}, ${COLOR_BLUE}:${timestamp}:\n ${logLevel.color}${BOLD}   [${logLevel.name}]${logLevel.color}${BOLD}: ${message}\n${COLOR_RESET}${COLOR_GREEN}\n ${COLOR_RESET}`
+		`${COLOR_GREEN}--- ${fileName}${COLOR_RESET}:${COLOR_ORANGE}${line}, ${COLOR_BLUE}:${timestamp}:\n ${logLevel.color}${BOLD}   [${logLevel.name}]: ${COLOR_RESET}${logLevel.color}${message}\n ${COLOR_RESET}`
 	);
 }
 
