@@ -2,8 +2,7 @@ import { Request, Response } from "express";
 import { Collection, ObjectId } from "mongodb";
 import { Product } from "../../data/interface/products.js";
 import { logWithLocation } from "../../helpers/betterConsoleLog.js";
-import { productSchema } from "../../routes/productRouter.js";
-
+import { productSchema } from "../../data/schema.js";
 export const addProduct = async (
 	req: Request,
 	res: Response,

@@ -2,8 +2,7 @@ import { Request, Response } from "express";
 import { Collection, ObjectId } from "mongodb";
 import { Product } from "../../data/interface/products.js";
 import { logWithLocation } from "../../helpers/betterConsoleLog.js";
-import { productSchema } from "../../routes/productRouter.js";
-
+import { idSchema } from "../../data/schema.js";
 /**
  * The function `getProduct` retrieves a product from a collection based on the provided ID and handles
  * validation, error logging, and response generation.
@@ -12,12 +11,18 @@ import { productSchema } from "../../routes/productRouter.js";
  * will be used to send the response back to the client making the request. It is an instance of the
  * Express `Response` object, which provides methods for sending responses such as `res.status()` and
  * `res.json
- * @param collection - The `collection` parameter in the `getProduct` function represents a collection
- * of products in a database. It is of type `Collection<Product>`, indicating that it is a collection
- * specifically designed to store instances of the `Product` class or interface. This parameter is used
- * to query the database for a
+ * @param collection - The `collection` parameter in the `getProduct` function refers to the MongoDB
+ * collection where the product data is stored. It is of type `Collection<Product>`, indicating that it
+ * is a collection of documents that represent products.
+ * @param {ObjectId} id - The `id` parameter in the `getProduct` function is the unique identifier of
+ * the product you want to retrieve from the database. It is used to query the database for the
+ * specific product with that ID.
  * @returns The `getProduct` function returns a JSON response with a status code and message based on
- * the outcome of the product retrieval process.
+ * the outcome of the product retrieval process. If the product is successfully found, it returns a
+ * success message along with the product data and a status code of 200. If there is a validation error
+ * with the product ID, it returns an error message indicating the validation issue and a status code
+ * of 400. If there is an error getting the product, it returns an error message indicating the error
+ * and a status code of 500.
  */
 export const getProduct = async (
 	req: Request,
@@ -25,11 +30,10 @@ export const getProduct = async (
 	collection: Collection<Product>,
 	id: ObjectId
 ) => {
-	// const { id } = req.params;
-
 	try {
+		const { id } = req.params;
 		logWithLocation(`Trying to get product with id: ${id}`, "info");
-		const { error } = productSchema.validate({ id });
+		const { error } = idSchema.validate({ _id: id });
 
 		if (error) {
 			logWithLocation(`Validation error: ${error.message}`, "error");
@@ -40,8 +44,8 @@ export const getProduct = async (
 				error: error.message,
 			});
 		}
-
-		const product = await collection.findOne({ _id: new ObjectId(id) });
+		const _id = new ObjectId(id);
+		const product = await collection.findOne({ _id });
 
 		if (!product) {
 			logWithLocation(`Product not found: ${id}`, "error");
