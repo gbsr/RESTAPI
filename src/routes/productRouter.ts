@@ -9,28 +9,11 @@ import { addProduct } from "../crud/products/addProduct.js";
 import { deleteProduct } from "../crud/products/deleteProduct.js";
 import { getProduct } from "../crud/products/getProduct.js";
 import { getAllProducts } from "../crud/products/getAllProducts.js";
+import { updateProduct } from "../crud/products/updateProduct.js";
+import { searchProducts } from "../crud/search/searchProducts.js";
 
 const productRouter = Router();
 let collection: Collection<Product>;
-
-/* This code  is defining and exporting a Joi schema object named
-`productSchema`. This schema is used for validating the structure and content of data objects
-representing products before they are processed or stored in the application. */
-export const productSchema = Joi.object({
-	name: Joi.string().min(1).required(),
-	price: Joi.number().greater(0).required(),
-	image: Joi.string().required(),
-	amountInStock: Joi.number().required(),
-});
-
-/* The `idSchema` constant is defining a schema using Joi for validating the structure of an object
-representing an ID. In this case, the schema specifies that the object must have a property named
-`_id` which is a string, must be a hexadecimal value, must have a length of 24 characters, and is
-required. This schema is used for validating the format of IDs before processing them in routes or
-functions to ensure they meet the expected criteria. */
-const idSchema = Joi.object({
-	_id: Joi.string().hex().length(24).required(),
-});
 
 /* This is a middleware function that is being used by the `productRouter`. 
     It initialises the `collection` variable with the `products` collection from the database. 
@@ -38,6 +21,11 @@ const idSchema = Joi.object({
 productRouter.use((req: Request, res: Response, next) => {
 	collection = db.collection<Product>("products");
 	next();
+});
+
+// Search product request query
+productRouter.get("/search", async (req: Request, res: Response) => {
+	await searchProducts(req, res, collection);
 });
 
 /* This function is defining a route handler for handling GET requests to fetch all products. When a GET
@@ -68,6 +56,10 @@ res, collection); });` code snippet is defining a route handler for handling DEL
 delete a specific product by its ID. */
 productRouter.delete("/:id", async (req: Request, res: Response) => {
 	await deleteProduct(req, res, collection);
+});
+
+productRouter.put("/:id", async (req: Request, res: Response) => {
+	await updateProduct(req, res, collection);
 });
 
 export { productRouter };
