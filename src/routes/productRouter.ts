@@ -10,6 +10,7 @@ import { deleteProduct } from "../crud/products/deleteProduct.js";
 import { getProduct } from "../crud/products/getProduct.js";
 import { getAllProducts } from "../crud/products/getAllProducts.js";
 import { updateProduct } from "../crud/products/updateProduct.js";
+import { searchProducts } from "../crud/search/searchProducts.js";
 
 const productRouter = Router();
 let collection: Collection<Product>;
@@ -20,6 +21,11 @@ let collection: Collection<Product>;
 productRouter.use((req: Request, res: Response, next) => {
 	collection = db.collection<Product>("products");
 	next();
+});
+
+// Search product request query
+productRouter.get("/search", async (req: Request, res: Response) => {
+	await searchProducts(req, res, collection);
 });
 
 /* This function is defining a route handler for handling GET requests to fetch all products. When a GET
