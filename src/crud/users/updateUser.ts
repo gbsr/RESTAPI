@@ -1,37 +1,33 @@
 import { Request, Response } from "express";
 import { Collection, ObjectId } from "mongodb";
 import { logWithLocation } from "../../helpers/betterConsoleLog.js";
-import { productSchema } from "../../data/schema.js";
-import { Product } from "../../data/interface/products.js";
-
-export const updateProduct = async (
+import { userSchema } from "../../data/schema.js";
+import { User } from "../../data/interface/users.js";
+export const updateUser = async (
 	req: Request,
 	res: Response,
-	collection: Collection<Product>
+	collection: Collection<User>
 ) => {
-	const productId = req.params.id;
+	const userId = req.params.id;
 	const updateData = req.body;
 
 	try {
-		logWithLocation(
-			`Trying to update product with id ${productId}`,
-			"info"
-		);
+		logWithLocation(`Trying to update User with id ${userId}`, "info");
 
 		// First, check if the product exists
 		const existingProduct = await collection.findOne({
-			_id: new ObjectId(productId),
+			_id: new ObjectId(userId),
 		});
 
 		if (!existingProduct) {
-			logWithLocation(`Product not found: ${productId}`, "warning");
+			logWithLocation(`User not found: ${userId}`, "warning");
 			res.status(404);
 			logWithLocation(`${res.statusCode}`, "server");
-			return res.json({ message: "Product not found" });
+			return res.json({ message: "User not found" });
 		}
 
 		// Validate the update data
-		const { error } = productSchema.validate(updateData, {
+		const { error } = userSchema.validate(updateData, {
 			// allowUnknown: true,
 			stripUnknown: true,
 		});
@@ -41,7 +37,7 @@ export const updateProduct = async (
 			res.status(400);
 			logWithLocation(`${res.statusCode}`, "server");
 			return res.json({
-				message: "Invalid product data",
+				message: "Invalid user data",
 				error: error.details.map((detail) => detail.message),
 			});
 		}
@@ -52,19 +48,19 @@ export const updateProduct = async (
 
 		// Perform the update
 		const updateResult = await collection.updateOne(
-			{ _id: new ObjectId(productId) },
+			{ _id: new ObjectId(userId) },
 			{ $set: updateFields }
 		);
 
 		if (updateResult.modifiedCount > 0) {
-			logWithLocation(`Product ${productId} updated.`, "success");
+			logWithLocation(`User ${userId} updated.`, "success");
 			res.status(200);
 			logWithLocation(`${res.statusCode}`, "server");
 			return res.json({
-				message: "Product updated successfully.",
+				message: "User updated successfully.",
 			});
 		} else {
-			logWithLocation(`No changes made to product ${productId}`, "info");
+			logWithLocation(`No changes made to user ${userId}`, "info");
 			res.status(200);
 			logWithLocation(`${res.statusCode}`, "server");
 			return res.json({
@@ -72,11 +68,11 @@ export const updateProduct = async (
 			});
 		}
 	} catch (error: any) {
-		logWithLocation(`Error updating product: ${error.message}`, "error");
+		logWithLocation(`Error updating user: ${error.message}`, "error");
 		res.status(500);
 		logWithLocation(`${res.statusCode}`, "server");
 		return res.json({
-			message: "Error updating product",
+			message: "Error updating user",
 			error: error.message,
 		});
 	}
