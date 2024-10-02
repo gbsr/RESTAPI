@@ -3,7 +3,7 @@ import fs from "fs";
 import path from "path";
 
 // Generate 20 product entries
-const products = Array.from({ length: 20 }, (_, i) => ({
+const products = Array.from({ length: 0 }, (_, i) => ({
 	name: `Product ${i + 1}`,
 	price: (i + 1) * 10,
 	category: `Category ${i % 2 === 0 ? "A" : "B"}`,
