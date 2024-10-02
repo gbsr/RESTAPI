@@ -20,8 +20,15 @@ button.addEventListener('click', async () => {
 
 	data.products.forEach(item => {
 		const li = document.createElement('li')
-		li.innerText = `${item.name} ... ${item.price}`
+		li.innerHTML = ` 
+		<div class="container">
+		<h2>${item.name}</h2>
+		<p class="poppins-regular"> ${item.price} SEK </p>
+		</div>
+		<div class="imgContainer">
+		<img src="${item.image}" alt="${item.image}"/></div>`
 		ul.append(li)
+		
 	})
 
 })
