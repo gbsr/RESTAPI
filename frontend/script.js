@@ -18,10 +18,11 @@ button.addEventListener('click', async () => {
 	console.log('Svar från servern: ', data)
 	// [ {category, id, name, price} ]
 
-	data.forEach(product => {
+	data.products.forEach(item => {
 		const li = document.createElement('li')
-		li.innerText = `${product.name} ... ${product.price}`
+		li.innerText = `${item.name} ... ${item.price}`
 		ul.append(li)
 	})
+
 })
 

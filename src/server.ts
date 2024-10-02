@@ -8,13 +8,18 @@ import { connect, client } from "./data/dbConnection.js";
 import cors from 'cors';
 
 
-
 const app = express();
 const port = process.env.PORT;
 
 // Middleware
 app.use(express.json());
-app.use( cors() )  // öppna API:et för resten av världen
+app.use(cors()); // Öppna API:et för resten av världen
+app.use(express.static("./frontend")); // Serva statiska filer från frontend-mappen
+
+// Rutter
+app.get("/", (req, res) => {
+    res.sendFile("index.html", { root: "./frontend" }); // Servera index.html direkt
+});
 
 // Routes
 app.get("/", (req, res) => {
@@ -22,7 +27,7 @@ app.get("/", (req, res) => {
 	res.status(200).send("Server is running");
 	logWithLocation(`Server status: ${res.statusCode}`, "success");
 });
-app.use("/", express.static("../frontend"));
+
 
 app.use("/products", productRouter);
 app.use("/users", userRouter);
