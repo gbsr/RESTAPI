@@ -16,17 +16,15 @@ app.use(express.json());
 app.use(cors()); // Öppna API:et för resten av världen
 app.use(express.static("./frontend")); // Serva statiska filer från frontend-mappen
 
-// Rutter
-app.get("/", (req, res) => {
-    res.sendFile("index.html", { root: "./frontend" }); // Servera index.html direkt
-});
 
-// Routes
-app.get("/", (req, res) => {
+
+
+//Används inte när vi har en frontend
+/*app.get("/", (req, res) => {
 	res.status(200)
 	res.status(200).send("Server is running");
 	logWithLocation(`Server status: ${res.statusCode}`, "success");
-});
+});*/
 
 
 app.use("/products", productRouter);
