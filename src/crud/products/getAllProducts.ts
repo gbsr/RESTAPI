@@ -43,8 +43,8 @@ export const getAllProducts = async (
 		res.status(200);
 		logWithLocation(`${res.statusCode}`, "server");
 		return res.json({
-			message: "Products retrieved successfully",
-			data: products,
+			/*message: "Products retrieved successfully",*/
+			products,
 		});
 	} catch (error: any) {
 		logWithLocation(`Error fetching products: ${error.message}`, "error");
