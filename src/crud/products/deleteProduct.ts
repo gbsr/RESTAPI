@@ -2,29 +2,22 @@ import { Request, Response } from "express";
 import { Collection, ObjectId } from "mongodb";
 import { Product } from "../../data/interface/products.js";
 import { logWithLocation } from "../../helpers/betterConsoleLog.js";
-import Joi from "joi";
-
-// TODO: Move this schema, and all other schemas into their own schema-file!
-const deleteProductSchema = Joi.object({
-	id: Joi.string().required().length(24).hex(),
-});
+import { deleteProductSchema } from "../../data/schema.js";
 
 /**
- * The `deleteProduct` function handles the deletion of a product from a collection based on the
- * provided ID.
- * @param {Request} req - `req` is the request object representing the HTTP request made to the server.
- * It contains information such as the request headers, parameters, body, and other details sent by the
- * client.
- * @param {Response} res - The `res` parameter in the `deleteProduct` function is an instance of the
- * Express Response object. It is used to send a response back to the client making the request. This
- * response can include status codes, headers, and data in various formats like JSON, HTML, or plain
- * text.
- * @param collection - The `collection` parameter in the `deleteProduct` function represents a MongoDB
- * collection where product documents are stored. It is of type `Collection<Product>`, indicating that
- * it is a collection of documents of type `Product`. This parameter is used to perform operations like
- * deleting a product document based on the provided
- * @returns The `deleteProduct` function returns a response based on the outcome of deleting a product
- * from a collection.
+ * Deletes a product from the database based on the provided product ID.
+ * Validates the ID before attempting to perform the deletion.
+ * Responds with appropriate status codes and messages for success,
+ * validation errors, and server errors.
+ *
+ * @param {Object} req - The request object containing parameters.
+ * @param {Object} res - The response object used to send back the desired HTTP response.
+ 
+* @param {Request} req - The request object containing the product ID in the parameters.
+ * @param {Response} res - The response object to send the result of the deletion.
+ * @param {Collection<Product>} collection - The collection from which the product will be deleted.
+ *
+ * @returns {Promise<void>} A promise that resolves when the operation is complete.
  */
 
 export const deleteProduct = async (

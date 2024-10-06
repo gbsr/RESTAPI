@@ -1,6 +1,3 @@
-// documented with mintlify
-// https://writer.mintlify.com/
-
 // Color codes
 export const COLOR_GREEN = "\x1b[32m";
 export const COLOR_ORANGE = "\x1b[38;5;208m";
@@ -18,9 +15,22 @@ interface LogLevel {
 	logFunction: (message?: string, ...optionalParams: string[]) => void;
 }
 
-/* The `defaultLogLevels` constant is an object that stores predefined log levels along with their
-respective configurations. Each log level is represented as a key-value pair within the object.
- */
+/****
+ * A collection of predefined log levels, each associated with a logging function,
+ * a name, and a color for display purposes.
+ *
+ * The default log levels include:
+ * - info
+ * - warn
+ * - error
+ * - debug
+ * - success
+ * - response
+ * - server
+ *
+ * The 'customLogLevels' variable holds user-defined log levels and can be modified
+ * to add additional logging capabilities beyond the defaults.
+ ****/
 const defaultLogLevels: { [key: string]: LogLevel } = {
 	info: { name: "INFO", color: COLOR_RESET, logFunction: console.log },
 	warn: { name: "WARN", color: COLOR_ORANGE, logFunction: console.warn },
@@ -42,11 +52,11 @@ const defaultLogLevels: { [key: string]: LogLevel } = {
 let customLogLevels: { [key: string]: LogLevel } = {};
 
 /**
- * The function `formatDate` takes a `Date` object and returns a formatted string representing the date
- * and time in a specific format.
- * @param {Date} date - Date object that represents a specific date and time.
- * @returns The `formatDate` function takes a `Date` object as input and returns a formatted string
- * representing the date in the format "YYYY-MM-DD HH:mm:ss.SSS".
+ * Formats a given Date object into a string with the format:
+ * YYYY-MM-DD HH:mm:ss.sss
+ *
+ * @param {Date} date - The Date object to format.
+ * @returns {string} The formatted date string.
  */
 function formatDate(date: Date): string {
 	const pad = (num: number, digits: number = 2) =>
@@ -59,16 +69,11 @@ function formatDate(date: Date): string {
 }
 
 /**
- * The function `addCustomLogLevel` adds a custom log level with a specified name, color, and log
- * function to a collection of custom log levels.
- * @param {string} name - The `name` parameter is a string that represents the custom log level name.
- * @param {string} color - The `color` parameter is a string that represents the color associated with
- * the custom log level. This color will be used to distinguish the custom log level in the console
- * output or any other logging mechanism.
- * @param logFunction - The `logFunction` parameter in the `addCustomLogLevel` function is a function
- * that takes a message (optional) and any number of optional parameters. By default, it is set to
- * `console.log`, but you can provide a custom logging function when calling `addCustomLogLevel`. This
- * allows you
+ * Adds a custom log level to the logging system.
+ *
+ * @param {string} name - The name of the custom log level, which will be converted to lowercase.
+ * @param {string} color - The color associated with the custom log level.
+ * @param {function} [logFunction=console.log] - The logging function to be used for this log level; defaults to console.log.
  */
 export function addCustomLogLevel(
 	name: string,
@@ -86,14 +91,13 @@ export function addCustomLogLevel(
 }
 
 /**
- * The function `logWithLocation` logs a message with location information such as file name and line
- * number.
- * @param {string} message - The `message` parameter is a string that represents the log message you
- * want to output along with its location information.
- * @param {string} level - The `level` parameter in the `logWithLocation` function is used to specify
- * the log level of the message being logged. It can be a string indicating the severity or importance
- * of the log message, such as "info", "warning", "error", etc. The function then determines the
- * appropriate
+ * Logs a message with additional information about the location (file name and line number)
+ * from which the log was generated, along with a timestamp.
+ *
+ * @param {string} message - The message to be logged.
+ * @param {string} level - The log level to be used. If the provided level is not recognized,
+ *                         it falls back to the default log level (info).
+ *
  */
 export function logWithLocation(message: string, level: string): void {
 	const logLevel =
@@ -131,15 +135,14 @@ export function logWithLocation(message: string, level: string): void {
 // addCustomLogLevel("CRITICAL", COLOR_MAGENTA);
 // logWithLocation("This is a critical message", 'critical');
 
-// Performance logging
 /**
- * The `logPerformance` function logs the time taken for a given function to execute and returns the
- * result of the function.
- * @param {string} label - The `label` parameter is a string that represents a description or name for
- * the performance measurement being logged.
- * @param fn - A function that you want to measure the performance of.
- * @returns The `logPerformance` function is returning the result of the function `fn` that was passed
- * as a parameter.
+ * Logs the performance of a given function by measuring the time it takes to execute.
+ *
+ * @param {string} label - A descriptive label for the performance measurement.
+ * @param {function} fn - The function whose performance is being measured.
+ *
+ * The function executes `fn`, computes the time taken for its execution,
+ * and logs the time along with the provided label in a debug message.
  */
 export function logPerformance(label: string, fn: () => any): any {
 	const start = performance.now();

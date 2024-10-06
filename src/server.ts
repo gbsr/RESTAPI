@@ -5,39 +5,49 @@ import { userRouter } from "./routes/userRouter.js";
 import { cartRouter } from "./routes/cartRouter.js";
 import { logWithLocation } from "./helpers/betterConsoleLog.js";
 import { connect, client } from "./data/dbConnection.js";
-import cors from 'cors';
+import cors from "cors";
 
-
+// This Express.js application sets up a server with middleware for JSON parsing and CORS support.
+// It serves static files from the "frontend" directory and defines routes for products, users, and cart functionality.
+// The main route serves an index.html file and returns server status.
+// The `startServer` function connects to the database and starts the server on a specified port,
+// logging success or failure of this operation, and handles errors by closing the client and exiting the process.
 const app = express();
 const port = process.env.PORT;
 
 // Middleware
 app.use(express.json());
-app.use(cors()); // Öppna API:et för resten av världen
-app.use(express.static("./frontend")); // Serva statiska filer från frontend-mappen
 
+// Enables Cross-Origin Resource Sharing (CORS) for the application, allowing it to accept requests from different origins.
+app.use(cors());
 
+// Serve static files from the "frontend" directory using Express.
+app.use(express.static("./frontend"));
 
+// Sets up a route handler for GET requests to the root URL ("/")
+// that sends the "index.html" file from the "./frontend" directory.
+app.get("/", (req, res) => {
+	res.sendFile("index.html", { root: "./frontend" }); // Servera index.html direkt
+});
 
-//Används inte när vi har en frontend
-/*app.get("/", (req, res) => {
-	res.status(200)
+// Routes
+app.get("/", (req, res) => {
+	res.status(200);
 	res.status(200).send("Server is running");
 	logWithLocation(`Server status: ${res.statusCode}`, "success");
-});*/
-
+});
 
 app.use("/products", productRouter);
 app.use("/users", userRouter);
 app.use("/cart", cartRouter);
 
-
-
 /**
- * The `startServer` function attempts to connect to a server, starts listening on a specified port,
- * and logs the success or failure of the operation.
+ * Initializes and starts the server by establishing a connection.
+ *
+ * This function attempts to connect to a required service and, upon success, starts the server
+ * listening on the specified port. If the connection fails, it logs an error message, closes
+ * the client, and exits the process with a failure status.
  */
-// Start server
 async function startServer() {
 	try {
 		await connect();
@@ -53,9 +63,10 @@ async function startServer() {
 
 startServer();
 
-// Graceful shutdown
-/* The code snippet `process.on("SIGINT", async () => { ... })` is setting up an event listener for the
-SIGINT signal in Node.js. */
+// Handles the SIGINT signal (e.g., when the process is interrupted)
+// to gracefully shut down the application. It logs a message,
+// closes the MongoDB connection, logs confirmation of the closure,
+// and then exits the process with a status code of 0.
 process.on("SIGINT", async () => {
 	console.log("Shutting down gracefully...");
 	await client.close();

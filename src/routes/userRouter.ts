@@ -9,6 +9,29 @@ import { updateUser } from "../crud/users/updateUser.js";
 import { deleteUser } from "../crud/users/deleteUser.js";
 import { searchUsers } from "../crud/search/searchUser.js";
 
+/**
+ * A router for handling user-related HTTP requests.
+ *
+ * Initializes the user collection in the database and provides
+ * endpoints for searching, listing, retrieving, adding, updating,
+ * and deleting users. Each route handler requires a request and
+ * response object, and utilizes the shared user collection.
+ *
+ * The following routes are defined:
+ *
+ * - GET /search: Searches for users based on request query.
+ * - GET /:id: Retrieves a user by their ID. The ID is parsed
+ *   from the route parameters.
+ * - GET /: Lists all users.
+ * - POST /: Adds a new user using data from the request body.
+ * - PUT /:id: Updates an existing user specified by the ID in
+ *   the route parameters.
+ * - DELETE /:id: Deletes a user specified by the ID in the
+ *   route parameters.
+ *
+ * Each route handler passes the request and response to
+ * their corresponding functionality and awaits the result.
+ */
 const userRouter = Router();
 let collection: Collection<User>;
 

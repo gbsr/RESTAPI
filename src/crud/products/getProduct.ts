@@ -3,26 +3,21 @@ import { Collection, ObjectId } from "mongodb";
 import { Product } from "../../data/interface/products.js";
 import { logWithLocation } from "../../helpers/betterConsoleLog.js";
 import { idSchema } from "../../data/schema.js";
+
 /**
- * The function `getProduct` retrieves a product from a collection based on the provided ID and handles
- * validation, error logging, and response generation.
- * @param {Request} req - Request object containing information about the HTTP request
- * @param {Response} res - The `res` parameter in the `getProduct` function is the response object that
- * will be used to send the response back to the client making the request. It is an instance of the
- * Express `Response` object, which provides methods for sending responses such as `res.status()` and
- * `res.json
- * @param collection - The `collection` parameter in the `getProduct` function refers to the MongoDB
- * collection where the product data is stored. It is of type `Collection<Product>`, indicating that it
- * is a collection of documents that represent products.
- * @param {ObjectId} id - The `id` parameter in the `getProduct` function is the unique identifier of
- * the product you want to retrieve from the database. It is used to query the database for the
- * specific product with that ID.
- * @returns The `getProduct` function returns a JSON response with a status code and message based on
- * the outcome of the product retrieval process. If the product is successfully found, it returns a
- * success message along with the product data and a status code of 200. If there is a validation error
- * with the product ID, it returns an error message indicating the validation issue and a status code
- * of 400. If there is an error getting the product, it returns an error message indicating the error
- * and a status code of 500.
+ * Retrieves a product from the database by its ID.
+ *
+ * @param {Request} req - The HTTP request object, expected to contain the product ID in the URL parameters.
+ * @param {Response} res - The HTTP response object used to send the response back to the client.
+ * @param {Collection<Product>} collection - The MongoDB collection from which to retrieve the product.
+ * @param {ObjectId} id - The ObjectId of the product (not used directly, as it is redefined from req.params).
+ *
+ * The function performs the following steps:
+ * - Validates the ID from the request parameters against a predefined schema.
+ * - Responds with a 400 status and an error message if validation fails.
+ * - Searches for the product in the collection; responds with a 404 status if not found.
+ * - Responds with a 200 status and the product data if found.
+ * - Catches any exceptions that occur during the process, logging the error and responding with a 500 status.
  */
 export const getProduct = async (
 	req: Request,

@@ -3,6 +3,21 @@ import { Collection } from "mongodb";
 import { User } from "../../data/interface/users.js";
 import { logWithLocation } from "../../helpers/betterConsoleLog.js";
 import { userSchema } from "../../data/schema.js";
+
+/**
+ * Adds a new user to the specified collection.
+ *
+ * @param {Request} req - The request object containing user data in the body.
+ * @param {Response} res - The response object used to send responses back to the client.
+ * @param {Collection<User>} collection - The MongoDB collection where the user will be added.
+ *
+ * This function validates the user data received in the request. If validation fails,
+ * it responds with a 400 status code and an error message. If validation succeeds,
+ * it attempts to insert the new user into the collection. In case of an error during
+ * insertion, it catches the error, logs it, and responds with a 500 status code and an
+ * appropriate error message. The function also logs information about the status and
+ * actions taken.
+ */
 export const addUser = async (
 	req: Request,
 	res: Response,
