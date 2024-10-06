@@ -4,15 +4,16 @@ import { Cart } from "../../data/interface/cart.js";
 import { logWithLocation } from "../../helpers/betterConsoleLog.js";
 
 /**
- * The function `deleteCartItem` deletes a specific product from a user's cart collection based on the
- * provided user and product IDs.
- * @param {Request} req - Request object containing information about the HTTP request
- * @param {Response} res - The `res` parameter in the `deleteCartItem` function stands for the response
- * object in Express.js. It is used to send a response back to the client making the request. In this
- * function, it is used to send JSON responses with status codes such as 200 for success, 404 for
- * @param collection - The `collection` parameter in the `deleteCartItem` function refers to the
- * MongoDB collection where the cart items are stored. It is of type `Collection<Cart>`, indicating
- * that it is a collection of documents that represent cart items.
+ * Deletes an item from the user's cart based on the provided productId and userId.
+ *
+ * @param {Request} req - The request object containing userId and productId in the parameters.
+ * @param {Response} res - The response object used to send back the status and messages.
+ * @param {Collection<Cart>} collection - The MongoDB collection from which to delete the cart item.
+ *
+ * This function attempts to find the specified product in the cart. If the product exists,
+ * it deletes the product and returns a success message. If the product is not found,
+ * it returns a 404 status with a relevant message. In case of an error during the operation,
+ * a 500 status is returned along with the error message.
  */
 export const deleteCartItem = async (
 	req: Request,

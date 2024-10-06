@@ -4,6 +4,20 @@ import { User } from "../../data/interface/users.js";
 import { logWithLocation } from "../../helpers/betterConsoleLog.js";
 import { idSchema } from "../../data/schema.js";
 
+/**
+ * Retrieves a user by ID from the specified collection.
+ *
+ * This function first validates the provided user ID against a schema. If the
+ * validation fails, it responds with a 400 status code and an error message.
+ * If the ID is valid, it attempts to find the user in the collection.
+ * It handles scenarios where the user is not found (responding with a
+ * 404 status code) and also catches any errors that occur during the
+ * retrieval process, responding with a 500 status code.
+ *
+ * @param {Request} req - The request object containing the user ID in params.
+ * @param {Response} res - The response object to send the response back to the client.
+ * @param {Collection<User>} collection - The MongoDB collection to query for the user.
+ */
 export const getUser = async (
 	req: Request,
 	res: Response,
