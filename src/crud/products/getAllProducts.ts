@@ -4,21 +4,18 @@ import { Product } from "../../data/interface/products.js";
 import { logWithLocation } from "../../helpers/betterConsoleLog.js";
 
 /**
- * The function getAllProducts retrieves all products from a collection and handles errors
- * appropriately.
- * @param {Request} req - `req` is the request object representing the HTTP request made to the server.
- * It contains information about the request such as headers, parameters, and body data. This object is
- * used to extract data sent by the client to the server.
- * @param {Response} res - The `res` parameter in the `getAllProducts` function is the response object
- * that will be used to send back the response to the client making the request. It is an instance of
- * the Express Response object, which provides methods for sending responses like `res.status()` and
- * `res.json()`.
- * @param collection - The `collection` parameter in the `getAllProducts` function represents a
- * collection of products in a database. It is of type `Collection<Product>`, where `Product` is the
- * type of objects stored in the collection. This parameter is used to interact with the database
- * collection to retrieve all products asynchronously.
- * @returns The function `getAllProducts` returns a JSON response with a message and data based on the
- * outcome of fetching all products from a collection.
+ * Retrieves all products from a specified collection and sends the response to the client.
+ *
+ * @param {Request} req - The request object representing the HTTP request.
+ * @param {Response} res - The response object used to send the HTTP response.
+ * @param {Collection<Product>} collection - The MongoDB collection from which products are fetched.
+ *
+ * This function attempts to find all products in the provided collection.
+ * It logs various statuses during the process:
+ * - If products are found, it returns them with a 200 status.
+ * - If no products are found, it logs an error and responds with a 404 status.
+ * - If an error occurs while fetching the products, it catches the error, logs it,
+ *   and responds with a 500 status along with the error message.
  */
 export const getAllProducts = async (
 	req: Request,

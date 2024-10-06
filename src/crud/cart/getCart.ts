@@ -4,19 +4,15 @@ import { Cart } from "../../data/interface/cart.js";
 import { logWithLocation } from "../../helpers/betterConsoleLog.js";
 
 /**
- * The function `getCart` fetches cart data from a collection and sends it as a JSON response, handling
- * errors appropriately.
- * @param {Request} req - The `req` parameter is an object representing the HTTP request that the
- * server receives. It contains information about the request such as the URL, headers, parameters, and
- * body data. This parameter is typically used to extract data sent by the client to the server.
- * @param {Response} res - The `res` parameter in the `getCart` function is the response object that
- * will be used to send a response back to the client making the request. It is an instance of the
- * `Response` class from the Express.js framework. This object allows you to set the HTTP status code,
- * headers
- * @param collection - The `collection` parameter in the `getCart` function represents a MongoDB
- * collection where the cart data is stored. It is of type `Collection<Cart>`, indicating that it is a
- * collection of documents of type `Cart`. This parameter is used to interact with the MongoDB
- * collection to fetch the cart
+ * Fetches the cart from the specified collection and returns it as a JSON response.
+ *
+ * @param {Request} req - The HTTP request object.
+ * @param {Response} res - The HTTP response object.
+ * @param {Collection<Cart>} collection - The collection from which to fetch the cart.
+ *
+ * @returns {Promise<void>} - A promise that resolves to void.
+ *
+ * If an error occurs during fetching, a 500 status code is returned along with an error message.
  */
 export const getCart = async (
 	req: Request,
@@ -45,16 +41,15 @@ export const getCart = async (
 };
 
 /**
- * The function `getCartByUserId` retrieves a user's cart based on the user ID provided in the request
- * parameters.
- * @param {Request} req - Request object containing information about the HTTP request
- * @param {Response} res - The `res` parameter in the `getCartByUserId` function is the response object
- * that will be used to send a response back to the client making the request. It is an instance of the
- * `Response` class from the Express.js framework. In this function, it is used to send a
- * @param collection - The `collection` parameter in the `getCartByUserId` function is of type
- * `Collection<Cart>`. This indicates that it is a collection of documents of type `Cart`. The function
- * is expected to retrieve cart data based on the `userId` provided in the request parameters from this
- * collection.
+ * Fetches the shopping cart for a specific user based on the user ID provided in the request parameters.
+ *
+ * @param {Request} req - The request object containing the user ID in its parameters.
+ * @param {Response} res - The response object used to send back the desired HTTP response.
+ * @param {Collection<Cart>} collection - The MongoDB collection from which to retrieve the cart data.
+ *
+ * This function attempts to log information regarding the process of fetching the cart and handles errors
+ * that may arise during the operation. In case of an error, a 500 status code is returned along with
+ * an error message detailing the issue.
  */
 export const getCartByUserId = async (
 	req: Request,

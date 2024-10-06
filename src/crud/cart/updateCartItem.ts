@@ -3,21 +3,17 @@ import { Collection, ObjectId } from "mongodb";
 import { Cart } from "../../data/interface/cart.js";
 import { logWithLocation } from "../../helpers/betterConsoleLog.js";
 
-// TODO: Update this with proper mintlify once it's back online hehe
 /**
- * The function `updateCartItem` fetches cart data from a collection and updates the item, and handles
- * errors appropriately.
- * @param {Request} req - The `req` parameter is an object representing the HTTP request that the
- * server receives. It contains information about the request such as the URL, headers, parameters, and
- * body data. This parameter is typically used to extract data sent by the client to the server.
- * @param {Response} res - The `res` parameter in the `getCart` function is the response object that
- * will be used to send a response back to the client making the request. It is an instance of the
- * `Response` class from the Express.js framework. This object allows you to set the HTTP status code,
- * headers
- * @param collection - The `collection` parameter in the `getCart` function represents a MongoDB
- * collection where the cart data is stored. It is of type `Collection<Cart>`, indicating that it is a
- * collection of documents of type `Cart`. This parameter is used to interact with the MongoDB
- * collection to fetch the cart
+ * Updates the quantity of a specific product in a user's shopping cart.
+ *
+ * @param {Request} req - The request object containing userId, productId, and amount as parameters.
+ * @param {Response} res - The response object used to send back the desired HTTP response.
+ * @param {Collection<Cart>} collection - The MongoDB collection where cart items are stored.
+ *
+ * This function attempts to find an existing cart item using the userId and productId.
+ * If the item is found, it updates the amount with the provided value and sends a success response.
+ * If the item is not found, it sends a 404 response indicating that the product is not in the cart.
+ * In case of an error during the process, it logs the error and sends a 500 response with an error message.
  */
 export const updateCartItem = async (
 	req: Request,

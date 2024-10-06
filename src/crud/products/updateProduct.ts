@@ -4,6 +4,22 @@ import { logWithLocation } from "../../helpers/betterConsoleLog.js";
 import { productSchema } from "../../data/schema.js";
 import { Product } from "../../data/interface/products.js";
 
+/**
+ * Updates a product in the specified collection.
+ *
+ * @param {Request} req - The request object containing the product ID as a parameter and the update data in the body.
+ * @param {Response} res - The response object used to send back the results of the operation.
+ * @param {Collection<Product>} collection - The MongoDB collection to perform the update operation on.
+ *
+ * This function performs the following steps:
+ * - Logs an attempt to update the product.
+ * - Checks if the product exists in the collection by its ID.
+ * - Validates the provided update data against the predefined schema.
+ * - Removes the `_id` field from the update data to avoid conflicts with MongoDB.
+ * - Executes the update operation and responds based on the result.
+ *
+ * In case of an error during any of these steps, it catches the error and responds with a 500 status code along with an error message.
+ */
 export const updateProduct = async (
 	req: Request,
 	res: Response,
@@ -18,7 +34,16 @@ export const updateProduct = async (
 			"info"
 		);
 
-		// First, check if the product exists
+		/**
+		 * Retrieves an existing product from the database using the provided productId.
+		 * Logs a warning if the product is not found and responds with a 404 status and
+		 * a corresponding message. Additionally, it validates the updateData against
+		 * the productSchema, stripping unknown properties.
+		 *
+		 * @param {string} productId - The ID of the product to retrieve.
+		 * @param {Object} updateData - The data to validate for updating the product.
+		 * @throws Will log a warning message if the product is not found in the database.
+		 */
 		const existingProduct = await collection.findOne({
 			_id: new ObjectId(productId),
 		});
@@ -30,7 +55,7 @@ export const updateProduct = async (
 			return res.json({ message: "Product not found" });
 		}
 
-		// Validate the update data
+		// This code validates updateData against the productSchema. If validation fails, it logs the error message and responds with a 400 status code along with a JSON message detailing the validation errors. The 'stripUnknown' option is enabled to remove properties not defined in the schema.
 		const { error } = productSchema.validate(updateData, {
 			// allowUnknown: true,
 			stripUnknown: true,

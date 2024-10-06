@@ -2,7 +2,10 @@ import { logWithLocation } from "./betterConsoleLog.js";
 import fs from "fs";
 import path from "path";
 
-// Generate 20 product entries
+// Generates an array of product objects with properties like name, price, category, description,
+// inStock status, rating, creation date, and image URL. Each product object is populated based
+// on its index in the array, creating a total of 20 products with alternating categories and
+// stock availability.
 const products = Array.from({ length: 20 }, (_, i) => ({
 	name: `Product ${i + 1}`,
 	price: (i + 1) * 10,
@@ -15,6 +18,17 @@ const products = Array.from({ length: 20 }, (_, i) => ({
 }));
 
 // Function to write products to a file
+/**
+ * Writes product data to a specified file.
+ *
+ * @param {string} outputPath - The path where the file should be written.
+ * The function resolves this path to an absolute path.
+ *
+ * The function attempts to write the JSON string of the products
+ * to the file and handles any potential errors by logging them
+ * to the console. If the write operation is successful, a success
+ * message is logged with the location of the written file.
+ */
 function writeProductsToFile(outputPath: string) {
 	const absoluteOutputPath = path.resolve(outputPath);
 
