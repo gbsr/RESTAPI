@@ -4,16 +4,17 @@ import { Cart } from "../../data/interface/cart.js";
 import { logWithLocation } from "../../helpers/betterConsoleLog.js";
 
 /**
- * The function `addCartItem` in TypeScript handles adding products to a cart collection, updating the
- * quantity if the product already exists.
- * @param {Request} req - Request object containing information about the HTTP request
- * @param {Response} res - The `res` parameter in the `addCartItem` function stands for the response
- * object in Express.js. It is used to send a response back to the client making the request. In this
- * function, it is being used to send JSON responses with status codes such as 200 for successful
- * updates and
- * @param collection - The `collection` parameter in the `addCartItem` function refers to a MongoDB
- * collection where cart items are stored. This collection is of type `Collection<Cart>`, indicating
- * that it stores documents of type `Cart`.
+ * Adds an item to the shopping cart. If the item already exists in the cart, it updates the quantity.
+ *
+ * @param {Request} req - The request object containing parameters for userId, productId, and amount.
+ * @param {Response} res - The response object used to send back the appropriate response.
+ * @param {Collection<Cart>} collection - The MongoDB collection where cart items are stored.
+ *
+ * The function attempts to find an existing cart item using the provided userId and productId.
+ * If found, it updates the amount of the existing cart item. If not found, it creates a new cart item.
+ *
+ * It includes error handling for any exceptions that may occur during the process, logging errors
+ * to the server and responding with a status code of 500 along with an error message.
  */
 export const addCartItem = async (
 	req: Request,

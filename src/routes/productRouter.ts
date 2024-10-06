@@ -12,12 +12,24 @@ import { getAllProducts } from "../crud/products/getAllProducts.js";
 import { updateProduct } from "../crud/products/updateProduct.js";
 import { searchProducts } from "../crud/search/searchProducts.js";
 
+/**
+ * Defines the routes and middleware for handling product-related HTTP requests.
+ *
+ * Middleware to initialize the product collection before processing requests.
+ *
+ * Routes:
+ * - GET /search: Searches for products based on query parameters.
+ * - GET /:id: Retrieves a specific product by its ID.
+ * - GET /: The root route retrieves all products.
+ * - POST /post: Adds a new product to the collection.
+ * - DELETE /:id: Deletes a specific product by its ID.
+ * - PUT /:id: Updates an existing product by its ID.
+ *
+ * All routes make use of the passed collection of products.
+ */
 const productRouter = Router();
 let collection: Collection<Product>;
 
-/* This is a middleware function that is being used by the `productRouter`. 
-    It initialises the `collection` variable with the `products` collection from the database. 
-    This is being done so that we can use the `collection` variable in the other routes. */
 productRouter.use((req: Request, res: Response, next) => {
 	collection = db.collection<Product>("products");
 	next();
@@ -28,32 +40,19 @@ productRouter.get("/search", async (req: Request, res: Response) => {
 	await searchProducts(req, res, collection);
 });
 
-/* This function is defining a route handler for handling GET requests to fetch all products. When a GET
-request is made to the root endpoint ("/"), this handler function is executed asynchronously. It
-calls the `getAllProducts` function passing the request (`req`), response (`res`), and the
-`collection` of products as parameters. */
 productRouter.get("/", async (req: Request, res: Response) => {
 	await getAllProducts(req, res, collection);
 });
 
-/* This function is defining a route handler for handling GET requests to fetch a specific product by its ID. */
 productRouter.get("/:id", async (req: Request, res: Response) => {
 	const id = new ObjectId();
 	await getProduct(req, res, collection, id);
 });
 
-/* This is defining a route handler for handling a POST request to add a new product.
-When a POST request is made to the "/post" endpoint, this handler function is executed
-asynchronously. It calls the `addProduct` function passing the request (`req`), response (`res`),
-and the `collection` of products as parameters. The `addProduct` function is responsible for adding
-a new product to the database based on the data provided in the request body. */
 productRouter.post("/post", async (req: Request, res: Response) => {
 	await addProduct(req, res, collection);
 });
 
-/* The `productRouter.delete("/:id", async (req: Request, res: Response) => { await deleteProduct(req,
-res, collection); });` code snippet is defining a route handler for handling DELETE requests to
-delete a specific product by its ID. */
 productRouter.delete("/:id", async (req: Request, res: Response) => {
 	await deleteProduct(req, res, collection);
 });
