@@ -26,9 +26,12 @@ app.use(express.static("./frontend"));
 
 // Sets up a route handler for GET requests to the root URL ("/")
 // that sends the "index.html" file from the "./frontend" directory.
+// currently unused
+/*
 app.get("/", (req, res) => {
-	res.sendFile("index.html", { root: "./frontend" }); // Servera index.html direkt
+	res.sendFile("index.html", { root: "./frontend" });
 });
+*/
 
 // Routes
 app.get("/", (req, res) => {
