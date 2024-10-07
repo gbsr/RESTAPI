@@ -20,6 +20,7 @@ Documented with [https://writer.mintlify.com/](Mintlify Document Writer)
     - [POST /products](#post-products)
     - [PUT /products/id](#put-productsid)
     - [DELETE /products/id](#delete-productsid)
+    - [GET /products/search](#get-productssearch)
 
   - [users](#users)
 
@@ -28,6 +29,7 @@ Documented with [https://writer.mintlify.com/](Mintlify Document Writer)
     - [POST /users](#post-users)
     - [PUT /users/id](#put-usersid)
     - [DELETE /users/id](#delete-usersid)
+    - [GET /users/search](#get-userssearch)
 
   - [cart](#cart)
     - [GET /cart](#get-cart)
@@ -178,8 +180,36 @@ Delete a product by its `id`.
 DELETE /products/id
 ```
 
-- **Path Parameter**: `id` (number) – The ID of the product.
-- **Response**: Returns the updated list of products after deletion.
+### GET `/products/search`
+
+Search for products by name using a query string.
+
+- **Query Parameter**:
+
+  - `q` (string) - The search term used to find products by their name.
+
+- **Response**:
+  - Returns an array of matching products. If no products match the search criteria, an empty array is returned.
+  - If the query parameter is missing, a 400 status code is returned with an error message.
+  - If an internal server error occurs, a 500 status code is returned with an error message.
+
+**Example Request**:
+
+```bash
+GET /products/search?q=Bluetooth
+```
+
+```json
+[
+  {
+    "_id": "66f28c753953d47e966446f5",
+    "name": "Bluetooth Speaker",
+    "price": 699,
+    "image": "https://wilmaniklasson.github.io/Bilder-grupparbete/img/Bluetooth%20Speaker.webp",
+    "amountInStock": 45
+  }
+]
+```
 
 ---
 
@@ -255,6 +285,59 @@ DELETE /users/id
 
 - **Path Parameter**: `id` (number) – The ID of the user.
 - **Response**: Returns the updated list of users after deletion.
+
+### GET `/users/search`
+
+Search for users by name using a query string.
+
+- **Query Parameter**:
+
+  - `q` (string) - The search term used to find users by their name.
+
+- **Response**:
+  - Returns an array of matching users. If no users match the search criteria, an empty array is returned.
+  - If the query parameter is missing, a 400 status code is returned with an error message.
+  - If an internal server error occurs, a 500 status code is returned with an error message.
+
+**Example Request**:
+
+```bash
+GET /users/search?q=Emma
+```
+
+**Example Response** (when users are found):
+
+```json
+[
+  {
+    "_id": "66f288110f48fe183bc22d74",
+    "name": "Emma Johnson ",
+    "isAdmin": false
+  }
+]
+```
+
+**Example Response** (when no users are found):
+
+```json
+[]
+```
+
+**Example Response** (when query parameter is missing):
+
+```json
+{
+  "message": "Search query is required"
+}
+```
+
+**Example Response** (on internal server error):
+
+```json
+{
+  "message": "Internal server error"
+}
+```
 
 ---
 
