@@ -38,7 +38,10 @@ export const deleteCartItem = async (
 			logWithLocation(`Product deleted from cart`, "success");
 			logWithLocation(`${res.status(200)}`, "server");
 
-			res.status(200).json({ message: "Product deleted from cart" });
+			res.status(200).json({ 
+				message: "Product deleted from cart",
+				productId: productId,
+			});
 		} else {
 			res.status(404).json({ message: "Product not found in cart" });
 		}

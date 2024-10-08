@@ -39,6 +39,7 @@ export const updateCartItem = async (
 			);
 			res.status(200).json({
 				message: "Product quantity updated in cart",
+				productId: productId,
 				updatedAmount,
 			});
 		} else {
