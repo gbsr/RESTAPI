@@ -109,6 +109,12 @@ GET /
 
 ---
 
+### Products API
+
+This section documents the API endpoints related to products.
+
+---
+
 ### GET `/products`
 
 Retrieve the list of all products.
@@ -119,22 +125,63 @@ GET /products
 
 - **Response**: Returns an array of products.
 
+**Example Response**:
+
+```json
+[
+  {
+    "_id": "66f28c753953d47e966446f5",
+    "name": "Bluetooth Speaker",
+    "price": 699,
+    "image": "https://wilmaniklasson.github.io/Bilder-grupparbete/img/Bluetooth%20Speaker.webp",
+    "amountInStock": 45
+  },
+  {
+    "_id": "66f28c753953d47e966446f6",
+    "name": "Wireless Headphones",
+    "price": 499,
+    "image": "https://example.com/wireless-headphones.webp",
+    "amountInStock": 20
+  }
+]
+```
+
 ---
 
-### GET `/products/id`
+### GET `/products/{id}`
 
 Retrieve a specific product by its `id`.
 
 ```bash
-GET /products/id
+GET /products/{id}
 ```
 
-- **Path Parameter**: `id` (number) – The ID of the product.
+- **Path Parameter**: `id` (string) – The ID of the product (an `ObjectId` from MongoDB).
 - **Response**: Returns the product if found, else a 404 status code.
+
+**Example Response**:
+
+```json
+{
+  "_id": "66f28c753953d47e966446f5", // ObjectId returned as a string
+  "name": "Bluetooth Speaker",
+  "price": 699,
+  "image": "https://wilmaniklasson.github.io/Bilder-grupparbete/img/Bluetooth%20Speaker.webp",
+  "amountInStock": 45
+}
+```
+
+**Error Response** (if product not found):
+
+```json
+{
+  "message": "Product not found"
+}
+```
 
 ---
 
-### POST `/products (to be implemented)`
+### POST `/products`
 
 Add a new product.
 
@@ -144,41 +191,83 @@ POST /products
 
 - **Request Body**: JSON object representing a product.
 
-  Example:
+**Example Request Body**:
 
-  ```json
-  {
-    "name": "Product Name",
-    "price": 100,
-    "category": "Category"
-  }
-  ```
+```json
+{
+  "name": "New Product Name",
+  "price": 299,
+  "image": "https://example.com/new-product-image.webp",
+  "amountInStock": 100
+}
+```
 
 - **Response**: Returns 201 status code on successful creation, or 400 for validation errors.
 
 ---
 
-### PUT `/products/id`
+### PUT `/products/{id}`
 
 Update an existing product by its `id`.
 
 ```bash
-PUT /products/id
+PUT /products/{id}
 ```
 
-- **Path Parameter**: `id` (number) – The ID of the product.
+- **Path Parameter**: `id` (string) – The ID of the product (an `ObjectId` from MongoDB).
 - **Request Body**: JSON object with updated product details.
-- **Response**: Returns the updated product list.
+
+**Example Request Body**:
+
+```json
+{
+  "name": "Bluetooth Speaker",
+  "price": 799,
+  "image": "https://wilmaniklasson.github.io/Bilder-grupparbete/img/Bluetooth%20Speaker.webp",
+  "amountInStock": 30
+}
+```
+
+- **Response**: Returns the updated product.
+
+**Example Response**:
+
+```json
+{
+  "message": "Product updated successfully",
+  "updatedProduct": {
+    "_id": "66f28c753953d47e966446f5",
+    "name": "Bluetooth Speaker",
+    "price": 799,
+    "image": "https://wilmaniklasson.github.io/Bilder-grupparbete/img/Bluetooth%20Speaker.webp",
+    "amountInStock": 30
+  }
+}
+```
 
 ---
 
-### DELETE `/products/id`
+### DELETE `/products/{id}`
 
 Delete a product by its `id`.
 
 ```bash
-DELETE /products/id
+DELETE /products/{id}
 ```
+
+- **Path Parameter**: `id` (string) – The ID of the product (an `ObjectId` from MongoDB).
+- **Response**: Returns a message confirming the deletion of the product.
+
+**Example Response**:
+
+```json
+{
+  "message": "Product deleted successfully",
+  "productId": "66f28c753953d47e966446f5"
+}
+```
+
+---
 
 ### GET `/products/search`
 
@@ -199,6 +288,8 @@ Search for products by name using a query string.
 GET /products/search?q=Bluetooth
 ```
 
+**Example Response** (when products are found):
+
 ```json
 [
   {
@@ -211,113 +302,7 @@ GET /products/search?q=Bluetooth
 ]
 ```
 
----
-
-### GET `/users`
-
-Retrieve the list of all users.
-
-```bash
-GET /users
-```
-
-- **Response**: Returns an array of users.
-
----
-
-### GET `/users/id`
-
-Retrieve a specific user by its `id`.
-
-```bash
-GET /users/id
-```
-
-- **Path Parameter**: `id` (number) – The ID of the user.
-- **Response**: Returns the user if found, else a 404 status code.
-
----
-
-### POST `/users`
-
-Add a new user.
-
-```bash
-POST /users
-```
-
-- **Request Body**: JSON object representing a user.
-
-  Example:
-
-  ```json
-  {
-    "name": "Emma Johnson ",
-    "isAdmin": false
-  }
-  ```
-
-- **Response**: Returns 201 status code on successful creation, or 400 for validation errors.
-
----
-
-### PUT `/users/id`
-
-Update an existing user by its `id`.
-
-```bash
-PUT /users/id
-```
-
-- **Path Parameter**: `id` (number) – The ID of the user.
-- **Request Body**: JSON object with updated user details.
-- **Response**: Returns the updated user list.
-
----
-
-### DELETE `/users/id`
-
-Delete a user by its `id`.
-
-```bash
-DELETE /users/id
-```
-
-- **Path Parameter**: `id` (number) – The ID of the user.
-- **Response**: Returns the updated list of users after deletion.
-
-### GET `/users/search`
-
-Search for users by name using a query string.
-
-- **Query Parameter**:
-
-  - `q` (string) - The search term used to find users by their name.
-
-- **Response**:
-  - Returns an array of matching users. If no users match the search criteria, an empty array is returned.
-  - If the query parameter is missing, a 400 status code is returned with an error message.
-  - If an internal server error occurs, a 500 status code is returned with an error message.
-
-**Example Request**:
-
-```bash
-GET /users/search?q=Emma
-```
-
-**Example Response** (when users are found):
-
-```json
-[
-  {
-    "_id": "66f288110f48fe183bc22d74",
-    "name": "Emma Johnson ",
-    "isAdmin": false
-  }
-]
-```
-
-**Example Response** (when no users are found):
+**Example Response** (when no products are found):
 
 ```json
 []
@@ -341,6 +326,151 @@ GET /users/search?q=Emma
 
 ---
 
+### GET `/users`
+
+Retrieve the list of all users.
+
+```bash
+GET /users
+```
+
+- **Response**: Returns an array of users, where each `id` is returned as a string representing the `ObjectId`.
+
+**Example Response**:
+
+```json
+[
+  {
+    "_id": "66f288110f48fe183bc22d74", // ObjectId returned as a string
+    "name": "Emma Johnson",
+    "isAdmin": false
+  },
+  {
+    "_id": "66f288110f48fe183bc22d75", // ObjectId returned as a string
+    "name": "John Doe",
+    "isAdmin": true
+  }
+]
+```
+
+---
+
+### GET `/users/id`
+
+Retrieve a specific user by its `id`.
+
+```bash
+GET /users/id
+```
+
+- **Path Parameter**: `id` (string) – The `ObjectId` of the user, returned as a string.
+- **Response**: Returns the user if found, else a 404 status code.
+
+---
+
+### POST `/users`
+
+Add a new user.
+
+```bash
+POST /users
+```
+
+- **Request Body**: JSON object representing a user.
+
+  Example:
+
+  ```json
+  {
+    "name": "Emma Johnson",
+    "isAdmin": false
+  }
+  ```
+
+- **Response**: Returns 201 status code on successful creation, including the new user’s `ObjectId` as a string.
+
+**Example Response**:
+
+```json
+{
+  "_id": "66f288110f48fe183bc22d76", // ObjectId returned as a string
+  "name": "Emma Johnson",
+  "isAdmin": false
+}
+```
+
+---
+
+### PUT `/users/id`
+
+Update an existing user by its `id`.
+
+```bash
+PUT /users/id
+```
+
+- **Path Parameter**: `id` (string) – The `ObjectId` of the user, returned as a string.
+- **Request Body**: JSON object with updated user details.
+- **Response**: Returns the updated user’s information, with `ObjectId` as a string.
+
+---
+
+### DELETE `/users/id`
+
+Delete a user by its `id`.
+
+```bash
+DELETE /users/id
+```
+
+- **Path Parameter**: `id` (string) – The `ObjectId` of the user, returned as a string.
+- **Response**: Returns a message confirming the user deletion.
+
+**Example Response**:
+
+```json
+{
+  "message": "User deleted",
+  "userId": "66f288110f48fe183bc22d76" // ObjectId returned as a string
+}
+```
+
+---
+
+### GET `/users/search`
+
+Search for users by name using a query string.
+
+- **Query Parameter**:
+
+  - `q` (string) - The search term used to find users by their name.
+
+- **Response**:
+  - Returns an array of matching users, where each `id` is returned as a string representing the `ObjectId`.
+  - If no users match the search criteria, an empty array is returned.
+  - If the query parameter is missing, a 400 status code is returned with an error message.
+  - If an internal server error occurs, a 500 status code is returned with an error message.
+
+**Example Request**:
+
+```bash
+GET /users/search?q=Emma
+```
+
+**Example Response** (when users are found):
+
+```json
+[
+  {
+    "_id": "66f288110f48fe183bc22d74", // ObjectId returned as a string
+    "name": "Emma Johnson",
+    "isAdmin": false
+  }
+]
+```
+
+---
+
 ### GET `/cart`
 
 Retrieve the list of all carts.
@@ -349,28 +479,22 @@ Retrieve the list of all carts.
 GET /cart
 ```
 
-- **Response**: Returns an array of carts.
+- **Response**: Returns an array of carts, where the `userId`, `productId`, and `_id` fields are all `ObjectId` values returned as strings from MongoDB.
 
 **Example Response**:
 
 ```json
 [
   {
-    "_id": "66f41ba4848b2c46fe6ab3f1",
-    "userId": "66f3dac2899e4901bfca8e91",
-    "productId": "66f28c753953d47e966446fd",
+    "_id": "66f41ba4848b2c46fe6ab3f1", // MongoDB ObjectId as a string
+    "userId": "66f3dac2899e4901bfca8e91", // MongoDB ObjectId as a string
+    "productId": "66f28c753953d47e966446fd", // MongoDB ObjectId as a string
     "amount": 3
   },
   {
     "_id": "66f41c0c848b2c46fe6ab3f2",
     "userId": "66f3dac2899e4901bfca8e91",
     "productId": "66f28c753953d47e966446fe",
-    "amount": 1
-  },
-  {
-    "_id": "66f41c4c848b2c46fe6ab3f3",
-    "userId": "66f3dac2899e4901bfca8e91",
-    "productId": "66f28c753953d47e966446ff",
     "amount": 1
   }
 ]
@@ -386,7 +510,7 @@ Retrieve a specific cart by its `userId`.
 GET /cart/user/{userId}
 ```
 
-- **Path Parameter**: `userId` (string) – The ID of the user.
+- **Path Parameter**: `userId` (string) – The `ObjectId` of the user, returned as a string.
 - **Response**: Returns the cart of the user if found, else a 404 status code.
 
 **Example Response**:
@@ -394,22 +518,10 @@ GET /cart/user/{userId}
 ```json
 [
   {
-    "_id": "66f41ca2848b2c46fe6ab3f4",
-    "userId": "66f3daf29ae1b485624b0861",
-    "productId": "66f28c753953d47e96644700",
+    "_id": "66f41ca2848b2c46fe6ab3f4", // MongoDB ObjectId as a string
+    "userId": "66f3daf29ae1b485624b0861", // MongoDB ObjectId as a string
+    "productId": "66f28c753953d47e96644700", // MongoDB ObjectId as a string
     "amount": 1
-  },
-  {
-    "_id": "66f528737a8d54267ca417a8",
-    "userId": "66f3daf29ae1b485624b0861",
-    "productId": "66f28c753953d47e966446f3",
-    "amount": 1
-  },
-  {
-    "_id": "66faa1e894e5e5e856f0cf2d",
-    "userId": "66f3daf29ae1b485624b0861",
-    "productId": "66f28c753953d47e966446fb",
-    "amount": 30
   }
 ]
 ```
@@ -424,8 +536,8 @@ Add a new product to a user's cart.
 POST /cart/add/{userId}/{productId}
 ```
 
-- **Path Parameter**: `userId` (string) – The ID of the user.
-- **Path Parameter**: `productId` (string) – The ID of the product.
+- **Path Parameter**: `userId` (string) – The `ObjectId` of the user, returned as a string.
+- **Path Parameter**: `productId` (string) – The `ObjectId` of the product, returned as a string.
 - **Request Body**:
   ```json
   {
@@ -440,10 +552,10 @@ POST /cart/add/{userId}/{productId}
 {
   "message": "Product added to cart",
   "newCartItem": {
-    "userId": "66f3daf29ae1b485624b0861",
-    "productId": "66f28c753953d47e966446fb",
+    "userId": "66f3daf29ae1b485624b0861", // MongoDB ObjectId as a string
+    "productId": "66f28c753953d47e966446fb", // MongoDB ObjectId as a string
     "amount": 1,
-    "_id": "6703f5bdb9221183af84da5e"
+    "_id": "6703f6469403b0386e972945" // MongoDB ObjectId as a string
   }
 }
 ```
@@ -458,8 +570,8 @@ Update the quantity of a product in the user's cart by its `userId` and `product
 PUT /cart/update/{userId}/{productId}
 ```
 
-- **Path Parameter**: `userId` (string) – The ID of the user.
-- **Path Parameter**: `productId` (string) – The ID of the product.
+- **Path Parameter**: `userId` (string) – The `ObjectId` of the user, returned as a string.
+- **Path Parameter**: `productId` (string) – The `ObjectId` of the product, returned as a string.
 - **Request Body**:
   ```json
   {
@@ -473,14 +585,14 @@ PUT /cart/update/{userId}/{productId}
 ```json
 {
   "message": "Product quantity updated in cart",
-  "productId": "66f28c753953d47e966446fb",
+  "productId": "66f28c753953d47e966446fb", // MongoDB ObjectId as a string
   "updatedAmount": 10
 }
 ```
 
 ---
 
-### DELETE `/cart/delete/userId/productId`
+### DELETE `/cart/delete/{userId}/{productId}`
 
 Delete a product from the user's cart by its `userId` and `productId`.
 
@@ -488,8 +600,8 @@ Delete a product from the user's cart by its `userId` and `productId`.
 DELETE /cart/delete/{userId}/{productId}
 ```
 
-- **Path Parameter**: `userId` (string) – The ID of the user.
-- **Path Parameter**: `productId` (string) – The ID of the product.
+- **Path Parameter**: `userId` (string) – The `ObjectId` of the user, returned as a string.
+- **Path Parameter**: `productId` (string) – The `ObjectId` of the product, returned as a string.
 - **Response**: Returns a message confirming the deletion of the product.
 
 **Example Response**:
@@ -497,7 +609,7 @@ DELETE /cart/delete/{userId}/{productId}
 ```json
 {
   "message": "Product deleted from cart",
-  "productId": "66f28c753953d47e966446fb"
+  "productId": "66f28c753953d47e966446fb" // MongoDB ObjectId as a string
 }
 ```
 
@@ -507,46 +619,49 @@ DELETE /cart/delete/{userId}/{productId}
 
 The API uses appropriate HTTP status codes to indicate the result of each request:
 
-- `400 Bad Request`: Invalid request or validation failed.
-- `404 Not Found`: The requested product does not exist.
-- `500 Internal Server Error`: Something went wrong on the server.
+- **400 Bad Request**: Indicates that the request is invalid or a validation error has occurred.
+- **404 Not Found**: Indicates that the requested resource (e.g., product or user) does not exist.
+- **500 Internal Server Error**: Indicates that an unexpected error occurred on the server.
 
-Inside the helpers directory, there is a file called betterConsoleLog which can be used to log detailed messages to the console.
-This file has some extra functions:
-`logWithLocation(message: string, level: string)`
+Within the **helpers** directory, there is a file named `betterConsoleLog`, which provides utility functions for logging detailed messages to the console. This file includes the following functions:
 
-- The function `logWithLocation` logs a message with location information such as file name and line
-- number.
-- @param {string} message - The `message` parameter is a string that represents the log message you
-  want to output along with its location information.
-- @param {string} level - The `level` parameter in the `logWithLocation` function is used to specify the log level of the message being logged. It can be a string indicating the severity or importance of the log message, such as "info", "warning", "error", etc.
+### `logWithLocation(message: string, level: string)`
 
-`logPerformance(label: string, fn: () => any): any`
+- Logs a message along with location information, such as the file name and line number.
+- **@param {string} message**: A string representing the log message to output, along with its location information.
+- **@param {string} level**: A string specifying the log level of the message (e.g., "info", "warning", "error").
 
-- The `logPerformance` function logs the time taken for a given function to execute and returns the result of the function.
-- @param {string} label - The `label` parameter is a string that represents a description or name for the performance measurement being logged.
-- @param fn - A function that you want to measure the performance of.
-- @returns The `logPerformance` function is returning the result of the function `fn` that was passed as a parameter.
-- Example use:
-  const result = logPerformance('Heavy computation', () => {
+### `logPerformance(label: string, fn: () => any): any`
+
+- Logs the execution time of a given function and returns the result of that function.
+- **@param {string} label**: A string representing a description or name for the performance measurement being logged.
+- **@param fn**: A function whose performance you want to measure.
+- **@returns**: Returns the result of the function `fn` that was passed as a parameter.
+
+**Example usage**:
+
+```javascript
+const result = logPerformance("Heavy computation", () => {
   // Your heavy computation here
   return someResult;
+});
+```
+
+---
 
 ## HTTP Status Codes
 
-The API follows standard HTTP status codes for successful and failed responses:
+The API adheres to standard HTTP status codes for successful and failed responses:
 
 - **200 OK**: Successful GET request.
-- **201 Created**: Successfully created a resource (e.g., new product).
-- **204 No Content**: Successful request but no content to return.
-- **400 Bad Request**: Validation error or malformed request.
-- **404 Not Found**: Resource not found.
-- **500 Internal Server Error**: A server error occurred.
+- **201 Created**: Successfully created a resource (e.g., a new product).
+- **204 No Content**: Successful request, but no content to return.
+- **400 Bad Request**: Indicates a validation error or malformed request.
+- **404 Not Found**: Indicates that the requested resource was not found.
+- **500 Internal Server Error**: Indicates that a server error occurred.
 
 ## License
 
 This project is licensed under the MIT License.
 
-```
-
-```
+---
